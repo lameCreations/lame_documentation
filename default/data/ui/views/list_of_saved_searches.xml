@@ -26,7 +26,7 @@
       <fieldForLabel>usecase</fieldForLabel>
       <fieldForValue>usecase</fieldForValue>
       <search>
-        <query>| inputlookup savedsearch_details.csv | stats count by usecase
+        <query>| inputlookup saved_search_details.csv | stats count by usecase
 | fields usecase</query>
         <earliest>-24h@h</earliest>
         <latest>now</latest>
@@ -43,7 +43,7 @@
         <search>
           <query>| rest /servicesNS/-/-/saved/searches splunk_server=local
 | search eai:acl.app=$app$ AND author!="nobody" 
-| lookup savedsearch_details.csv title as title output details, mitre, usecase
+| lookup saved_search_details.csv title as title output details, mitre, usecase
 | fillnull value="TBD" usecase, mitre
 | search usecase="$category$"
 | table title, eai:acl.app, actions, cron_schedule, action.summary_index._name, details, mitre, usecase</query>
