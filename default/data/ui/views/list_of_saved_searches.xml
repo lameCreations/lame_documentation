@@ -1,0 +1,67 @@
+<form version="1.1">
+  <label>List of Saved Searches</label>
+  <description>List of all saved searches in your environment</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="app">
+      <label>Choose App</label>
+      <choice value="*">*</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>eai:acl.app</fieldForLabel>
+      <fieldForValue>eai:acl.app</fieldForValue>
+      <search>
+        <query>| rest /servicesNS/-/-/saved/searches splunk_server=local
+| stats count by eai:acl.app
+| sort eai:acl.app
+| fields eai:acl.app</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="category">
+      <label>Category</label>
+      <choice value="*">*</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>usecase</fieldForLabel>
+      <fieldForValue>usecase</fieldForValue>
+      <search>
+        <query>| inputlookup savedsearch_details.csv | stats count by usecase
+| fields usecase</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+  </fieldset>
+ <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Saved Searches</title>
+        <search>
+          <query>| rest /servicesNS/-/-/saved/searches splunk_server=local
+| search eai:acl.app=$app$ AND author!="nobody" 
+| lookup savedsearch_details.csv title as title output details, mitre, usecase
+| fillnull value="TBD" usecase, mitre
+| search usecase="$category$"
+| table title, eai:acl.app, actions, cron_schedule, action.summary_index._name, details, mitre, usecase</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <condition field="title">
+            <eval token="u">$row.title$</eval>
+            <eval token="w">$row.eai:acl.app$</eval>
+            <link target="_blank">
+              <![CDATA[/app/$w$/search?s=$u$]]>
+            </link>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,1164 @@
+app,disabled,title,tags,search,details
+"DA-ITSI-CP-microsoft-exchange",true,"active-sync-service-perf","ms_ex_health
+ms_ex_health_active_sync","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:ActiveSync*""",
+"DA-ITSI-CP-microsoft-exchange",true,"active-sync-service-winhostmon","ms_ex_health
+ms_ex_health_active_sync","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeADTopology"" 
+         )",
+"Splunk_TA_windows",true,"ad-files",,"sourcetype=MSAD:NT6:Replication OR sourcetype=MSAD:NT6:Health OR sourcetype=MSAD:NT6:SiteInfo OR sourcetype=MSAD:NT6:Netlogon OR sourcetype=ActiveDirectory OR sourcetype=MSAD:NT6:DNS-Health OR sourcetype=MSAD:NT6:DNS-Zone-Information OR sourcetype=MSAD:NT6:DNS",
+"Splunk_TA_windows",true,admon,,"sourcetype=ActiveDirectory",
+"Splunk_TA_windows",true,"admon-computer",,"eventtype=admon objectCategory=""*CN=Computer*""",
+"Splunk_TA_windows",true,"admon-gpo",,"eventtype=admon objectCategory=""*CN=Group-Policy-Container*""",
+"Splunk_TA_windows",true,"admon-group",,"eventtype=admon objectCategory=""*CN=Group*""",
+"Splunk_TA_windows",true,"admon-user",,"eventtype=admon objectCategory=""*CN=Person*""",
+"Splunk_TA_nix",true,"aix_scripted_input","check
+report","sourcetype=AIX:*",
+"Splunk_TA_nix",true,auditd,"file
+os
+resource
+unix","sourcetype=auditd",
+"Splunk_TA_nix",true,"auditd_modify",modify,"source=auditd PATH",
+"DA-ITSI-CP-microsoft-exchange",true,"auto-discover-service-perf","ms_ex_health
+ms_ex_health_auto_discover","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:MSExchangeAutodiscover"" OR 
+         sourcetype=""Perfmon:MSExchange_FDS_OAB""",
+"DA-ITSI-CP-microsoft-exchange",true,"auto-discover-service-winhostmon","ms_ex_health
+ms_ex_health_auto_discover","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeADTopology"" OR 
+         Name=""MSExchangeAB"" OR 
+         Name=""MSExchangeFDS"" OR 
+         Name=""MSExchangeRPC"" OR 
+         Name=""MSExchangeProtectedServiceHost"" 
+         )",
+"Splunk_TA_nix",true,bandwidth,"network
+oshost
+performance
+resource
+success","sourcetype=bandwidth",
+"lame_training",true,"cim_authentication",authentication,"eventtype=network_monitoring_indexes (sourcetype=lame_kerberos OR sourcetype=lame_ssh)",
+"Splunk_SA_CIM",true,"cim_modaction",modaction,"index=cim_modactions (source=*_modalert.log* OR source=*_modworkflow.log*) sendmodaction",
+"Splunk_SA_CIM",true,"cim_modaction_invocation",invocation,"index=cim_modactions (source=*_modalert.log* OR source=*_modworkflow.log*) sendmodaction ""signature=\""Invoking modular action\""""",
+"lame_training",true,"cim_software",software,"eventtype=network_monitoring_indexes (sourcetype=corelight_software OR sourcetype=corelight_known_services)",
+"DA-ITSI-CP-microsoft-exchange",true,"client-activesync-usage",,"eventtype=msexchange-index sourcetype=MSWindows:*:IIS WebApplication=""Microsoft-Server-ActiveSync"" NOT (cs_username=""*\$*"" OR cs_username=""-"")",
+"DA-ITSI-CP-microsoft-exchange",true,"client-autodiscover-usage",,"eventtype=msexchange-index sourcetype=MSWindows:*:IIS cs_uri_stem=""/Autodiscover/Autodiscover.xml"" NOT (cs_username=""*\$*"" OR cs_username=""-"")",
+"DA-ITSI-CP-microsoft-exchange",true,"client-ews-usage",,"eventtype=msexchange-index sourcetype=MSWindows:*:IIS cs_uri_stem=""/EWS/*"" NOT (cs_username=""*\$*"" OR cs_username=""-"")",
+"DA-ITSI-CP-microsoft-exchange",true,"client-iis-logs",,"eventtype=msexchange-index sourcetype=MSWindows:*:IIS NOT (cs_username=""*\$*"" OR cs_username=""-"")",
+"DA-ITSI-CP-microsoft-exchange",true,"client-outlook-usage",,"eventtype=wineventlog-index source=""WinEventLog:Exchange Auditing"" SourceName=""MSExchangeIS Auditing"" (EventCode=10100 OR EventCode=10102) Process_Name=OUTLOOK.EXE",
+"DA-ITSI-CP-microsoft-exchange",true,"client-outlookanywhere-usage",,"eventtype=msexchange-index sourcetype=MSWindows:*:IIS cs_uri_stem=/rpc/rpcproxy.dll NOT (cs_username=""*\$*"" OR cs_username=""-"")",
+"DA-ITSI-CP-microsoft-exchange",true,"client-owa-usage",,"eventtype=msexchange-index sourcetype=MSWindows:*:IIS WebApplication=owa NOT (cs_username=""*\$*"" OR cs_username=""-"")",
+"DA-ITSI-CP-microsoft-exchange",true,"client-popimap-usage",,"eventtype=wineventlog-index eventtype=wineventlog_security EventCode=4624 Process_Name=""*Microsoft.Exchange*""",
+"Splunk_TA_nix",true,cpu,"avail
+cpu
+os
+oshost
+performance
+report
+resource
+unix","sourcetype=cpu",
+"Splunk_TA_nix",true,"cpu_anomalous",anomalous,"sourcetype=cpu PercentSystemTime>90",
+"Splunk_TA_nix",true,cputime,"avail
+cpu
+os
+oshost
+performance","NOT (sourcetype=WMI:CPUTime OR sourcetype=Perfmon:CPUTime) sourcetype=*:CPUTime",
+"Splunk_TA_nix",true,"cputime_anomalous",anomalous,"NOT (sourcetype=WMI:CPUTime OR sourcetype=Perfmon:CPUTime) sourcetype=*:CPUTime PercentSystemTime>90",
+"Splunk_TA_nix",true,df,"check
+df
+host
+oshost
+performance
+storage
+success","sourcetype=df",
+"Splunk_TA_nix",true,"dhcpd_server","dhcp
+network
+session
+unix","sourcetype=dhcpd (DHCPACK OR DHCPNAK OR DHCPRELEASE)",
+"Splunk_TA_nix",true,"dhcpd_server_dhcpack",,"sourcetype=dhcpd DHCPACK",
+"Splunk_TA_nix",true,"dhcpd_server_dhcpdiscover",,"sourcetype=dhcpd DHCPDISCOVER",
+"Splunk_TA_nix",true,"dhcpd_server_dhcpoffer",,"sourcetype=dhcpd DHCPOFFER",
+"Splunk_TA_nix",true,"dhcpd_server_dhcprelease",end,"sourcetype=dhcpd DHCPRELEASE",
+"Splunk_TA_nix",true,"dhcpd_server_dhcprequest",,"sourcetype=dhcpd DHCPREQUEST",
+"Splunk_TA_nix",true,"dhcpd_start",start,"sourcetype=dhcpd signature=DHCPACK",
+"Splunk_TA_nix",true,"dhcpd_unable_unexpected",error,"sourcetype=dhcpd unable OR unexpected",
+"Splunk_TA_windows",true,DhcpSrvLog,windows,"sourcetype=DhcpSrvLog",
+"Splunk_TA_windows",true,"DhcpSrvLog_dhcp","dhcp
+network
+session","sourcetype=DhcpSrvLog (msdhcp_id=13 OR msdhcp_id=14 OR msdhcp_id=15)",
+"Splunk_TA_windows",true,"DhcpSrvLog_end","dhcp
+end
+network
+session","sourcetype=DhcpSrvLog (msdhcp_id=12 OR msdhcp_id=16 OR msdhcp_id=17 OR msdhcp_id=18)",
+"Splunk_TA_windows",true,"DhcpSrvLog_start","dhcp
+network
+session
+start","sourcetype=DhcpSrvLog (msdhcp_id=10 OR msdhcp_id=11)",
+"Splunk_TA_windows",true,"endpoint_services_processes",,"source=""WMI:WinEventLog:Security"" OR sourcetype=""WinEventLog"" OR sourcetype=""XmlWinEventLog""",
+"Splunk_SA_CIM",true,err0r,error,"NOT sourcetype=stash (error OR failure OR fail OR failed OR fatal) NOT ""not an error""",
+"DA-ITSI-CP-windows-dashboards",true,"eventlog_Update_Failed",,"source=""*:System"" ""Installation Failure""",
+"DA-ITSI-CP-microsoft-exchange",true,"eventlog_Update_Successful",,"eventtype=msperfmon-index OR eventtype=wineventlog-index source=""*:System"" ""Installation Successful""",
+"DA-ITSI-CP-windows-dashboards",true,"eventlog_Update_Successful_windows",,"source=""*:System"" ""Installation Successful""",
+"DA-ITSI-CP-microsoft-exchange",true,"exchange-management-service-perf","ms_ex_health
+ms_ex_health_management","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:MSExchange_Control_Panel""",
+"DA-ITSI-CP-microsoft-exchange",true,"exchange-management-service-winhostmon","ms_ex_health
+ms_ex_health_management","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""ExFBA.exe"" OR 
+         Name=""MSExchangeMonitoring"" OR 
+         Name=""MSExchangeSA"" 
+         )",
+"Splunk_TA_nix",true,"failed_login",authentication,"(NOT sourcetype=stash) ""failed login"" OR ""FAILED LOGIN"" OR ""Authentication failure""  OR ""Failed to authenticate user"" OR ""authentication ERROR"" OR ""Failed password for""",
+"Splunk_TA_nix",true,"Failed_SU",authentication,"(NOT sourcetype=stash) (""failed SU to another user"" AND ""Agent platform:"" AND ""linux-x86"") OR (""failed SU to another user"" AND ""authentication failure"" AND ""for su service"") OR (""failed SU to another user"" AND logname=*) OR (exe=""/bin/su"" AND res=""failed"") OR (FAILED su for) OR (source=""/var/adm/sulog"" SU "" - "") OR (""BAD SU "")",
+"Splunk_TA_nix",true,"freebsd_refresh_na_answer","os
+unix","(NOT sourcetype=stash) refresh named punct=""*__::_*_[]:__./:_:_-____...#_(_...#)""",
+"Splunk_TA_nix",true,"freebsd_refresh_retry_exceeded","os
+unix","(NOT sourcetype=stash) refresh named punct=""*__::_*_[]:__./:_:_____...#__(_...#)""",
+"Splunk_TA_nix",true,freediskspace,"avail
+disk
+os
+oshost
+performance
+storage","NOT (sourcetype=WMI:FreeDiskSpace OR sourcetype=Perfmon:FreeDiskSpace) sourcetype=*:FreeDiskSpace",
+"Splunk_TA_nix",true,"freediskspace_anomalous",anomalous,"NOT (sourcetype=WMI:FreeDiskSpace OR sourcetype=Perfmon:FreeDiskSpace) sourcetype=*:FreeDiskSpace PercentFreeSpace<10",
+"Splunk_TA_nix",true,groupadd,"add
+change
+management","(NOT sourcetype=stash) groupadd group",
+"Splunk_TA_nix",true,"groupadd-suse","account
+add
+change
+management","(NOT sourcetype=stash) useradd account added group",
+"Splunk_TA_nix",true,groupdel,"change
+delete
+management","(NOT sourcetype=stash) (NOT *deleting-user-from*) (groupdel OR userdel) group",
+"Splunk_TA_nix",true,hardware,"avail
+cpu
+inventory
+memory
+os
+oshost
+unix","sourcetype=hardware",
+"Splunk_TA_windows",true,"hostmon_disk","inventory
+oshost
+performance
+storage","sourcetype=WinHostMon (Type=Disk)",
+"Splunk_TA_windows",true,"hostmon_inventory","cpu
+inventory
+memory
+os
+oshost","sourcetype=WinHostMon (Type=OperatingSystem OR Type=Processor)",
+"Splunk_TA_windows",true,"hostmon_os","memory
+os
+oshost
+performance
+windows","sourcetype=WinHostMon Type=OperatingSystem",
+"Splunk_TA_windows",true,"hostmon_windows","os
+windows","sourcetype=WinHostMon",
+"Splunk_TA_nix",true,"hpiod_Linux_syslog","os
+unix","(NOT sourcetype=stash) hpiod punct=""*__::_*:_*""",
+"Splunk_TA_nix",true,"hpux_scripted_input","check
+report","sourcetype=HPUX:*",
+"DA-ITSI-CP-microsoft-exchange",true,"inbound-smtp-service-perf","ms_ex_health
+ms_ex_health_inbound_smtp","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:MSExchange_SmtpReceive""",
+"DA-ITSI-CP-microsoft-exchange",true,"inbound-smtp-service-winhostmon","ms_ex_health
+ms_ex_health_inbound_smtp","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" 
+         )",
+"Splunk_TA_nix",true,interfaces,"inventory
+network","sourcetype=interfaces",
+system,true,"internal_search_terms",,"( ""After evaluating args"" OR ""Before evaluating args"" OR ""context dispatched for search="" OR ""SearchParser - PARSING"" OR ""got search"" OR ""_dispatchNewSearch - search"" OR ""search:* - q"" OR ( decomposition fullsearch ) OR ""PAAAAAARSER! - search"" OR ""view:* - DECOMPOSITION"" OR ""Splunk.Module.SearchBar .setInputField"" OR ( typeahead prefix ) OR ""DEBUG HTTPServer - Deleting request=GET"" OR /en-US/api/search/typeahead )",
+"Splunk_TA_nix",true,iostat,"cpu
+iostat
+oshost
+performance
+report
+resource
+storage
+success","sourcetype=iostat",
+"Splunk_TA_nix",true,"iptables_firewall_accept","communicate
+firewall
+host
+os
+success
+unix","(NOT sourcetype=stash) signature=firewall action=PASS OR action=permit",
+"Splunk_TA_nix",true,"iptables_firewall_deny","communicate
+failure
+firewall
+host
+os
+unix","(NOT sourcetype=stash) signature=firewall action=BLOCK OR action=dropped",
+"DA-ITSI-CP-windows-dashboards",true,"Key_Events_On_Hosts","Key_Events_On_Hosts","( 
+        eventtype=wineventlog_index_windows sourcetype=""wineventlog*"" OR sourcetype=""xmlwineventlog*"" 
+            (Type=""*Error*"" OR Type=""*Fail*"" OR EventCode=1074 OR EventCode=19 OR 
+            EventCode=20 OR EventCode=21 OR Eventcode=1001) 
+    ) OR 
+    ( 
+        eventtype=windows_index_windows sourcetype=""WindowsUpdateLog"" (status=""installed"" OR 
+            status=""failure"" OR status=""restart required"") 
+    )",
+"Splunk_TA_nix",true,"ksu_authentication",authentication,"(NOT sourcetype=stash) NOT sourcetype=ossec ksu (""authentication failed"" OR authenticated OR (Account authorization (failed OR successful)))",
+"Splunk_TA_nix",true,lastlog,,"sourcetype=lastlog",
+"DA-ITSI-CP-microsoft-exchange",true,"legacy-clients-service-perf","ms_ex_health
+ms_ex_health_legacy_clients","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:MSExchangePop3"" OR 
+         sourcetype=""Perfmon:MSExchangeImap4""",
+"DA-ITSI-CP-microsoft-exchange",true,"legacy-clients-service-winhostmon","ms_ex_health
+ms_ex_health_legacy_clients","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeIMap4"" OR 
+         Name=""MSExchangePOP3"" 
+         )",
+"Splunk_TA_nix",true,"linux-password-change","account
+change
+management
+modify
+password","(NOT sourcetype=stash) process=passwd password changed",
+"Splunk_TA_nix",true,"linux-password-change-failed","account
+change
+management
+modify
+password","(NOT sourcetype=stash) process=passwd password change failed",
+"Splunk_TA_nix",true,"linux_scripted_input","check
+report","sourcetype=Linux:*",
+"Splunk_TA_nix",true,listeningports,"config
+os
+report","(NOT sourcetype=WMI:ListeningPorts) sourcetype=*:ListeningPorts (NOT file_hash=*)",
+"Splunk_TA_nix",true,localprocesses,,"(NOT sourcetype=WMI:LocalProcesses) sourcetype=*:LocalProcesses",
+"Splunk_TA_nix",true,"localprocesses_anomalous",anomalous,"(NOT sourcetype=WMI:LocalProcesses) sourcetype=*:LocalProcesses (PercentSystemTime>50 OR PercentMemory>50) NOT app=Total",
+"Splunk_TA_nix",true,"login_authentication",authentication,"(NOT sourcetype=stash) NOT sourcetype=ossec login: ""Login failure on""",
+"Splunk_TA_nix",true,lsof,"file
+lsof
+report
+resource
+success","sourcetype=lsof",
+"DA-ITSI-CP-microsoft-exchange",true,"mailboxes-service-perf","ms_ex_health
+ms_ex_health_mailboxes","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:MSExchangeIS"" OR 
+         sourcetype=""Perfmon:MSExchangeIS_Client*"" OR 
+         sourcetype=""Perfmon:MSExchangeIS_Mailbox*"" OR 
+         sourcetype=""Perfmon:MSExchange_Database*"" OR 
+         sourcetype=""Perfmon:MSExchange_Database_Instances*"" OR 
+         sourcetype=""Perfmon:MSExchange_IS_Mailbox"" OR 
+         sourcetype=""Perfmon:MSExchange_Resourcebooking"" OR 
+         sourcetype=""Perfmon:MSExchange_Calendarattendant"" OR 
+         sourcetype=""Perfmon:MSExchange_Replication"" OR 
+         sourcetype=""Perfmon:MSExchange_IS_Public"" OR 
+         sourcetype=""Perfmon:MSExchange_Database_NoInstances"" OR 
+         sourcetype=""Perfmon:MSExchange_IS_Mailbox"" OR 
+         sourcetype=""Perfmon:Process_Microsoft.Exchange.Search.ExSearch"" OR 
+         sourcetype=""Perfmon:Process_msftesq"" OR 
+         sourcetype=""Perfmon:MSExchange_Search_Indices"" OR 
+         sourcetype=""Perfmon:Process_MSExchangeMailboxAssistants"" OR 
+         sourcetype=""Perfmon:MSExchange_Assistants_Per_Assistant"" OR 
+         sourcetype=""Perfmon:MSExchange_Assistants_Per_DB"" OR 
+         sourcetype=""Perfmon:MSExchange_Store_Interface_Total"" OR 
+         sourcetype=""Perfmon:MSExchange_Store_Interface"" OR 
+         sourcetype=""Perfmon:MSExchange_Mail_Submission"" OR 
+         sourcetype=""Perfmon:MSExchange_RpcClientAccess"" OR 
+         sourcetype=""MRM_Assistants*""",
+"DA-ITSI-CP-microsoft-exchange",true,"mailboxes-service-winhostmon","ms_ex_health
+ms_ex_health_mailboxes","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeMailboxAssistants"" OR 
+         Name=""MSExchangeRepl"" OR 
+         Name=""MSExchangeRPC"" OR 
+         Name=""MSExchangeSearch"" OR 
+         Name=""WSBExchange"" OR 
+         Name=""MSExchangeADTopology"" OR 
+         Name=""MSExchangeTransport"" OR 
+         Name=""MSExchangeTransportLogSearch"" OR 
+         Name=""MSExchangeFastSearch"" OR 
+         Name=""MSExchangeThrottling"" OR 
+         Name=""MSExchangeIS"" 
+         )",
+"Splunk_TA_nix",true,memory,"avail
+memory
+os
+oshost
+performance","NOT (sourcetype=WMI:Memory OR sourcetype=Perfmon:Memory) sourcetype=*:Memory",
+"Splunk_TA_nix",true,"memory_anomalous",anomalous,"NOT (sourcetype=WMI:Memory OR sourcetype=Perfmon:Memory) sourcetype=*:Memory mem_free<104857600",
+"Splunk_TA_windows",true,"microsoft_windows_hostmon_process","process
+report","sourcetype=WinHostMon source=process",
+"Splunk_TA_windows",true,"microsoft_windows_hostmon_service","report
+service","sourcetype=WinHostMon source=service",
+"Splunk_TA_windows",true,"microsoft_windows_hostmon_service_time","os
+performance
+synchronize
+time","sourcetype=WinHostMon source=service Name=W32Time",
+"DA-ITSI-CP-microsoft-exchange",true,"msad-account-lockout",,"eventtype=wineventlog-index eventtype=wineventlog_security EventCode=4740",
+"DA-ITSI-CP-windows-dashboards",true,"msad-account-lockout-windows",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security EventCode=4740",
+"DA-ITSI-CP-windows-dashboards",true,"msad-account-unlock",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security EventCode=4767",
+"DA-ITSI-CP-windows-dashboards",true,"msad-ad-access",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security EventCode=4662",
+"DA-ITSI-CP-windows-dashboards",true,"msad-admin-audit",,"(eventtype=msad-group-changes OR eventtype=msad-groupmembership-changes OR eventtype=msad-computer-changes OR eventtype=msad-user-changes OR eventtype=msad-account-lockout-windows OR eventtype=msad-account-unlock) user!=""*$"" src_user!=""*$""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-anomalous-events",,"eventtype=msad-security-anomalous-events OR eventtype=msad-dirsvcs-anomalous-events",
+"DA-ITSI-CP-windows-dashboards",true,"msad-computer-changes",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security (EventCode=4741 OR EventCode=4742 OR EventCode=4743)",
+"Splunk_TA_windows",true,"msad-dc-health",,"eventtype=powershell sourcetype=""MSAD:*:Health""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-dirsvcs-anomalous-events",,"eventtype=wineventlog_index_windows eventtype=wineventlog-ds (Type=Error OR Type=Warning OR EventCode=1458)",
+"DA-ITSI-CP-windows-dashboards",true,"msad-disabled-logons",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security EventCode=4625 (Status=0xC000006E OR Status=0xC0000072 OR Status=0xC0000193)",
+"Splunk_TA_windows",true,"msad-dns-debuglog",,"eventtype=ad-files sourcetype=""MSAD:*:DNS""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-dns-events",,"eventtype=wineventlog_index_windows ((eventtype=wineventlog_application OR eventtype=wineventlog_system OR eventtype=wineventlog_security) (Type=Warning OR Type=Error) DNS) OR (source=""WinEventLog:DNS Server"" (Type=Warning OR Type=Error))",
+"Splunk_TA_windows",true,"msad-dns-health",,"eventtype=powershell sourcetype=""MSAD:*:DNS-Health""",
+"Splunk_TA_windows",true,"msad-dns-zoneinfo",,"eventtype=powershell sourcetype=""MSAD:*:DNS-Zone-Information""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-failed-computer-logons",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security EventCode=4625 user=""*$""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-failed-user-logons",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security (EventCode=4625 OR ((EventCode=4768 OR EventCode=4771 OR EventCode=4776) Keywords=""Audit Failure"")) user!=""*$""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-group-changes",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security (EventCode=4727 OR EventCode=4730 OR EventCode=4731 OR EventCode=4734 OR EventCode=4735 OR EventCode=4737 OR EventCode=4744 OR EventCode=4745 OR EventCode=4748 OR EventCode=4749 OR EventCode=4750 OR EventCode=4753 OR EventCode=4754 OR EventCode=4755 OR EventCode=4758 OR EventCode=4759 OR EventCode=4760 OR EventCode=4763 OR EventCode=4764)",
+"DA-ITSI-CP-windows-dashboards",true,"msad-groupmembership-changes",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security (EventCode=4728 OR EventCode=4729 OR EventCode=4732 OR EventCode=4733 OR EventCode=4746 OR EventCode=4747 OR EventCode=4751 OR EventCode=4752 OR EventCode=4756 OR EventCode=4757 OR EventCode=4761 OR EventCode=4762)",
+"DA-ITSI-CP-microsoft-exchange",true,"msad-index",,"index=msad",
+"DA-ITSI-CP-windows-dashboards",true,"msad-password-changes",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security (EventCode=4723 OR EventCode=4724)",
+"DA-ITSI-CP-windows-dashboards",true,"msad-rep-errors",,"eventtype=wineventlog_index_windows eventtype=wineventlog-ds (EventCode=1014 OR EventCode=1083 OR EventCode=1084 OR EventCode=1203 OR EventCode=1307 OR EventCode=1308 OR EventCode=1311 OR EventCode=1566 OR EventCode=1699 OR EventCode=1800 OR EventCode=1801 OR EventCode=1865 OR EventCode=1925 OR EventCode=1926 OR EventCode=1988 OR EventCode=2087 OR EventCode=2088)",
+"Splunk_TA_windows",true,"msad-rep-health",,"eventtype=powershell sourcetype=""MSAD:*:Replication""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-security-anomalous-events",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security (Type=Error OR Type=Warning OR EventCode=512 OR EventCode=513 OR EventCode=516 OR EventCode=517 OR EventCode=1100 OR EventCode=1101 OR EventCode=1102 OR EventCode=1104 OR EventCode=4609 OR EventCode=4612 OR EventCode=1621)",
+"Splunk_TA_windows",true,"msad-site",,"eventtype=powershell sourcetype=""MSAD:*:SiteInfo""",
+"Splunk_TA_windows",true,"msad-siteinfo",,"eventtype=powershell sourcetype=""MSAD:*:SiteInfo"" Type=""Site""",
+"Splunk_TA_windows",true,"msad-sitelinkinfo",,"eventtype=powershell sourcetype=""MSAD:*:SiteInfo"" Type=""SiteLink""",
+"Splunk_TA_windows",true,"msad-subnet-affinity",,"sourcetype=""MSAD:*:Netlogon"" msad_affinity=NO_CLIENT_SITE",
+"Splunk_TA_windows",true,"msad-subnetinfo",,"eventtype=powershell sourcetype=""MSAD:*:SiteInfo"" Type=""Subnet""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-successful-computer-logons",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security EventCode=4624 user=""*$""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-successful-user-logons",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security EventCode=4624 user!=""*$""",
+"DA-ITSI-CP-windows-dashboards",true,"msad-user-changes",,"eventtype=wineventlog_index_windows eventtype=wineventlog_security (EventCode=4720 OR EventCode=4722 OR EventCode=4724 OR EventCode=4725 OR EventCode=4726 OR EventCode=4738 OR EventCode=4767 OR EventCode=4781 OR EventCode=4912) user!=""*$""",
+"DA-ITSI-CP-windows-dashboards",true,"msad_index_windows",,"index=msad",
+"Splunk_TA_windows",true,msdhcp,"dhcp
+network
+session
+windows","sourcetype=msdhcp",
+"Splunk_TA_windows",true,"msdhcp_end",,"sourcetype=msdhcp (msdhcp_id=12 OR msdhcp_id=16 OR msdhcp_id=17)",
+"Splunk_TA_windows",true,"msdhcp_start",start,"sourcetype=msdhcp (msdhcp_id=10 OR msdhcp_id=11 OR msdhcp_id=13)",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-admin-audit",,"eventtype=msexchange-index sourcetype=""MSExchange:*:AdminAudit""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-database-stats",,"eventtype=msexchange-index sourcetype=""MSExchange:*:Database-Stats""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-distlists",,"eventtype=msexchange-index sourcetype=""MSExchange:*:DistributionLists""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-folder-usage",,"eventtype=msexchange-index sourcetype=""MSExchange:*:Folder-Usage""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-inbox-rules",,"eventtype=msexchange-index sourcetype=""MSExchange:*:InboxRules""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-index",,"index=msexchange",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-mailbox-audit",,"eventtype=msexchange-index sourcetype=""MSExchange:*:MailboxAudit""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-mailbox-usage",,"eventtype=msexchange-index sourcetype=""MSExchange:*:Mailbox-Usage""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-msgtrack",,"eventtype=msexchange-index (sourcetype=MSExchange:*:MessageTracking) OR (eventtype=wineventlog_application SourceName=FSCTransportScanner)",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-perfmon","ms_ex_health_events","eventtype=msperfmon-index sourcetype=""Perfmon:*""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-publicfolders",,"eventtype=msexchange-index sourcetype=""MSExchange:*:PublicFolder-Stats""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-throttling-policies",,"eventtype=msexchange-index sourcetype=""MSExchange:*:ThrottlingPolicy""",
+"DA-ITSI-CP-microsoft-exchange",true,"msexchange-topology",,"eventtype=msexchange-index sourcetype=""MSExchange:*:Topology""",
+"DA-ITSI-CP-microsoft-exchange",true,"msperfmon-index",,"index=perfmon",
+"log_analysis_made_easy",true,"net_conn","communicate
+network","(sourcetype=corelight_conn OR sourcetype=bro_conn)",
+"log_analysis_made_easy",true,"net_dns","dns
+network
+resolution","index=zeek (sourcetype=bro_dns OR sourcetype=corelight_dns)",
+"log_analysis_made_easy",true,"net_ids","attack
+ids","index=corelight sourcetype=corelight_suricata_corelight",
+"Splunk_TA_windows",true,"netmon_windows","os
+windows","sourcetype=WinNetMon",
+"Splunk_TA_nix",true,netstat,"cpu
+listening
+netstat
+os
+port
+report
+success","sourcetype=netstat",
+"lame_training",true,"network_communicate_data","communicate
+network","(index=lame_training sourcetype=lame_conn)",
+search,true,"network_monitoring","communicate
+network","eventtype=network_monitoring_indexes (sourcetype=corelight_conn OR sourcetype=bro_conn)",
+search,true,"network_monitoring_indexes",,"(index=lame_training OR index=corelight)",
+"lame_training",true,"network_pfsense","communicate
+network","index=pfsense sourcetype=pfsense_firewall",
+"lame_TA",true,"Network_Traffic_Corelight","communicate
+network","sourcetype=corelight_conn",
+"lame_training",true,"network_traffic_dns","dns
+network
+resolution","eventtype=network_monitoring_indexes (sourcetype=corelight_dns OR sourcetype=bro_dns)",
+"lame_training",true,"networktraffic_index",,"index=lame_training",
+"Splunk_TA_nix",true,nfsiostat,"performance
+storage","sourcetype=nfsiostat",
+"Splunk_TA_nix",true,"nix-all-logs",,"source=""*.log"" OR source=""*.log.*"" OR source=""*/log/*"" OR source=""/var/adm/*"" OR source=""access*"" OR source=""*error*"" OR sourcetype=""syslo*"" NOT source=usersWithLoginPrivs NOT sourcetype=lastlog",
+"Splunk_TA_nix",true,"nix_acpi","os
+power
+unix","(NOT sourcetype=stash) ACPI:",
+"Splunk_TA_nix",true,"nix_agpgart","graphics
+os
+unix","(NOT sourcetype=stash) agpgart:",
+"Splunk_TA_nix",true,"nix_apm","os
+power
+unix","(NOT sourcetype=stash) apm:",
+"Splunk_TA_nix",true,"nix_automount","os
+unix","(NOT sourcetype=stash) automount punct=""::__::_*:_*""",
+"Splunk_TA_nix",true,"nix_config_change","configuration
+host
+modify
+os
+unix","(NOT sourcetype=stash) Configuration changed",
+"Splunk_TA_nix",true,"nix_configs",,"source=""/etc/*"" OR source=""*.conf"" OR source=""*.cfg""",
+"Splunk_TA_nix",true,"nix_console","os
+unix","(NOT sourcetype=stash) Console:",
+"Splunk_TA_nix",true,"nix_cron","os
+unix","(NOT sourcetype=stash) cron OR crond punct=""::__::_*:_*"" NOT Install: NOT Updated: NOT Erased:",
+"Splunk_TA_nix",true,"nix_cups_access","access
+os
+printer
+unix","(NOT sourcetype=stash) punct=""_-_-_[//:::_-]_\""_//._/.\""___-_-""",
+"Splunk_TA_nix",true,"nix_cups_error","os
+printer
+unix","(NOT sourcetype=stash) punct=""_[//:::_-]_*""",
+"Splunk_TA_nix",true,"nix_cups_page","os
+printer
+unix","(NOT sourcetype=stash) punct=""___[//:::_-]___-_""",
+"Splunk_TA_nix",true,"nix_dhclient","os
+unix","(NOT sourcetype=stash) dhclient punct=""__::_*:_*"" NOT punct=""//_::_*:_*."" NOT punct=""\""///*\"""" NOT Rule NOT Name",
+"Splunk_TA_nix",true,"nix_dma","access
+memory
+os
+unix","(NOT sourcetype=stash) DMA zone:",
+"Splunk_TA_nix",true,"nix_errors",error,"(NOT sourcetype=stash) error OR critical OR failure OR fail OR failed OR fatal",
+"Splunk_TA_nix",true,"nix_fingerprinting","os
+unix","(NOT sourcetype=stash) Client OS detected:",
+"Splunk_TA_nix",true,"nix_ftp_xferlog","ftp
+os
+transfer
+unix","(NOT sourcetype=stash) punct=""___*::___...__///*""",
+"Splunk_TA_nix",true,"nix_gconfd","os
+unix","(NOT sourcetype=stash) gconfd",
+"Splunk_TA_nix",true,"nix_gconfd_error",error,"(NOT sourcetype=stash) gconfd Error",
+"Splunk_TA_nix",true,"nix_gconfd_exiting",stop,"(NOT sourcetype=stash) gconfd Exiting OR signal",
+"Splunk_TA_nix",true,"nix_gconfd_resolved_address",,"(NOT sourcetype=stash) gconfd Resolved address",
+"Splunk_TA_nix",true,"nix_gconfd_starting",start,"(NOT sourcetype=stash) gconfd starting",
+"Splunk_TA_nix",true,"nix_gdm","os
+unix","(NOT sourcetype=stash) gdm punct=""*__::_*:_*"" NOT scrollkeeper NOT Updated: NOT Installed: NOT Erased: NOT pam*",
+"Splunk_TA_nix",true,"nix_gpm","os
+unix","(NOT sourcetype=stash) gpm  NOT Installed: NOT Updated: NOT Erased: NOT user NOT *.rpm punct=""*__::_*:_*.""",
+"Splunk_TA_nix",true,"nix_hald","os
+unix","(NOT sourcetype=stash) hald punct=""*__::_*:_*""",
+"Splunk_TA_nix",true,"nix_halt","os
+stop
+unix","(NOT sourcetype=stash) shutdown: system halt",
+"Splunk_TA_nix",true,"nix_kernel_attached","kernel
+os
+unix","(NOT sourcetype=stash) kernel",
+"Splunk_TA_nix",true,"nix_mDNSResponder","dns
+os
+unix","(NOT sourcetype=stash) mDNSResponder punct=""*__::_*:_*""",
+"Splunk_TA_nix",true,"nix_named1","dns
+os
+unix","(NOT sourcetype=stash) named punct=""*__::_/_[]:__*"" OR punct=""*__::_..._[]:_*""",
+"Splunk_TA_nix",true,"nix_named2","dns
+os
+unix","(NOT sourcetype=stash) named punct=""*__::_*_[]:__*"" NOT punct=""__::_*_[]:_____...""",
+"Splunk_TA_nix",true,"nix_ncftpd_logins","authentication
+ftp
+os
+unix","(NOT sourcetype=stash) ncftpd punct=""*__::_*:_*""",
+"Splunk_TA_nix",true,"nix_netlabel","kernel
+os
+unix","(NOT sourcetype=stash) NetLabel:",
+"Splunk_TA_nix",true,"nix_pci","os
+unix","(NOT sourcetype=stash) PCI: NOT BIOS",
+"Splunk_TA_nix",true,"nix_pnp","os
+unix","(NOT sourcetype=stash) pnp:",
+"Splunk_TA_nix",true,"nix_popper","mail
+os
+unix","(NOT sourcetype=stash) popper",
+"Splunk_TA_nix",true,"nix_postfix","os
+unix","(NOT sourcetype=stash) postfix punct=""*__::_*:_*""",
+"Splunk_TA_nix",true,"nix_prelink","os
+unix","(NOT sourcetype=stash) /usr/sbin/prelink: OR Prelinking",
+"Splunk_TA_nix",true,"nix_process_kill","os
+process
+stop
+unix","(NOT sourcetype=stash) exiting signal 15",
+"Splunk_TA_nix",true,"nix_restart","os
+stop
+unix","(NOT sourcetype=stash) shutdown: system reboot",
+"Splunk_TA_nix",true,"nix_rpc_statd","os
+unix","(NOT sourcetype=stash) rpc.statd",
+"Splunk_TA_nix",true,"nix_rpm","os
+unix
+update","(NOT sourcetype=stash) *.rpm  punct=""*-*.*.""",
+"Splunk_TA_nix",true,"nix_runlevel_change","configuration
+modify
+os
+unix","(NOT sourcetype=stash) init: punct=""*__::_*:_*""",
+"Splunk_TA_nix",true,"nix_scrollkeeper","os
+unix","(NOT sourcetype=stash) scrollkeeper punct=""__::__*""",
+"Splunk_TA_nix",true,"nix_security","os
+unix","sourcetype=""*_secure""",
+"Splunk_TA_nix",true,"nix_smartd","os
+unix","(NOT sourcetype=stash) smartd punct=""*__::_*:_*""",
+"Splunk_TA_nix",true,"nix_timesync","os
+performance
+report
+success
+synchronize
+time","(NOT sourcetype=stash) NOT sourcetype=ossec (ntpd OR ntpdate OR xntpd OR xntpdate OR ""MS Name/IP address"") ((""LastRx"" AND ""stratum"") OR ""Adjusting system clock"" OR ""synchronized to"" OR ""step time server"" OR ""adjust time server"")",
+"Splunk_TA_nix",true,"nix_timesync_failure","failure
+os
+performance
+report
+synchronize
+time","(NOT sourcetype=stash) NOT sourcetype=ossec (ntpd OR ntpdate OR xntpd OR xntpdate OR 506) (""NTP Server Unreachable"" OR ""Cannot talk to daemon"")",
+"Splunk_TA_nix",true,"nix_udevd","kernel
+os
+unix","(NOT sourcetype=stash) udevd",
+"Splunk_TA_nix",true,"nix_usb","os
+unix
+usb","(NOT sourcetype=stash) usb*: NOT punct=""<>:__*""",
+"Splunk_TA_nix",true,"nix_userhelper","os
+unix","(NOT sourcetype=stash) userhelper* NOT punct=""__*::_*:_*""",
+"Splunk_TA_nix",true,"nix_version","cpu
+info
+inventory
+memory
+os
+oshost
+report
+system
+version","(NOT sourcetype=WMI:Version) sourcetype=*:Version",
+"Splunk_TA_nix",true,"nix_yum_update","report
+success
+update","(NOT sourcetype=stash) NOT sourcetype=ossec yum Updated",
+"Splunk_TA_windows",true,"nt6-dns-events",,"sourcetype=MSAD:NT6:DNS",
+"Splunk_TA_nix",true,openPorts,"os
+report
+unix","sourcetype=openPorts",
+"Splunk_TA_nix",true,"osx_crash_log","error
+os
+unix","(NOT sourcetype=stash) Host Name Date/Time",
+"Splunk_TA_nix",true,"osx_scripted_input","check
+report","sourcetype=OSX:*",
+"DA-ITSI-CP-microsoft-exchange",true,"outbound-smtp-service-perf","ms_ex_health
+ms_ex_health_outbound_smtp","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:MSExchange_SmtpSend""",
+"DA-ITSI-CP-microsoft-exchange",true,"outbound-smtp-service-winhostmon","ms_ex_health
+ms_ex_health_outbound_smtp","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" 
+         )",
+"DA-ITSI-CP-microsoft-exchange",true,"outlook-anywhere-service-perf","ms_ex_health
+ms_ex_health_outlook_anywhere","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:ASP_NET"" OR 
+         sourcetype=""Perfmon:ASP_NET_Applications"" OR 
+         sourcetype=""Perfmon:RPC_HTTP_Proxy"" OR 
+         sourcetype=""Perfmon:MSExchangeAB"" OR 
+         sourcetype=""Perfmon:MSExchange_Availability_Service"" OR 
+         sourcetype=""Perfmon:MSExchangeWS"" OR 
+         sourcetype=""Perfmon:Web_Service""",
+"DA-ITSI-CP-microsoft-exchange",true,"outlook-anywhere-service-winhostmon","ms_ex_health
+ms_ex_health_outlook_anywhere","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeADTopology"" 
+         )",
+"DA-ITSI-CP-microsoft-exchange",true,"outlook-rpc-service-perf","ms_ex_health
+ms_ex_health_outlook_rpc","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:MSExchange_ADAccess_Caching*"" OR 
+         sourcetype=""Perfmon:MSExchange_ADAccess_DC*"" OR 
+         sourcetype=""Perfmon:MSExchange_ADAccess_Processes"" OR 
+         sourcetype=""Perfmon:DotNET_CLR_Memory""",
+"DA-ITSI-CP-microsoft-exchange",true,"outlook-rpc-service-winhostmon","ms_ex_health
+ms_ex_health_outlook_rpc","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeADTopology"" 
+         )",
+"DA-ITSI-CP-microsoft-exchange",true,"owa-service-perf","ms_ex_health
+ms_ex_health_owa","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:OWA*""",
+"DA-ITSI-CP-microsoft-exchange",true,"owa-service-winhostmon","ms_ex_health
+ms_ex_health_owa","eventtype=windows-index sourcetype=""WinHostMon"" ( 
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeADTopology"" OR 
+         Name=""ExFBA.exe"" 
+         )",
+"Splunk_TA_nix",true,package,,"sourcetype=package",
+"Splunk_TA_nix",true,"pam_unix_authentication",authentication,"(NOT sourcetype=stash) NOT sourcetype=ossec pam_unix (gdm OR sudo OR su) (""authentication failure"" OR ""session opened"")",
+"Splunk_TA_nix",true,"passwd-auth-failure","application
+authentication","(NOT sourcetype=stash) process=passwd Authentication failure punct=""*__::_*_[]:__:__""",
+"Splunk_TA_windows",true,perfmon,,"sourcetype=""Perfmon:*"" OR sourcetype=""PerfmonMk:*""",
+"Splunk_TA_windows",true,"perfmon-dns",,"eventtype=perfmon (sourcetype=""Perfmon:DNS"" OR sourcetype=""PerfmonMk:DNS"")",
+"Splunk_TA_windows",true,"perfmon-ntds",,"eventtype=perfmon (sourcetype=""Perfmon:NTDS"" OR sourcetype=""PerfmonMk:NTDS"")",
+"Splunk_TA_windows",true,"perfmon_cputime","cpu
+oshost
+performance
+report","(sourcetype=Perfmon:CPU OR sourcetype=PerfmonMk:CPU OR sourcetype=Perfmon:CPUTime)",
+"Splunk_TA_windows",true,"perfmon_cputime_anomalous",anomalous,"(sourcetype=Perfmon:CPU OR sourcetype=PerfmonMk:CPU OR sourcetype=Perfmon:CPUTime) windows_cpu_load_percent>90",
+"Splunk_TA_windows",true,"perfmon_freediskspace","disk
+oshost
+performance
+report
+storage","sourcetype=Perfmon:FreeDiskSpace",
+"Splunk_TA_windows",true,"perfmon_freediskspace_anomalous",anomalous,"sourcetype=Perfmon:FreeDiskSpace windows_storage_free_percent<10",
+"DA-ITSI-CP-windows-dashboards",true,"perfmon_index_windows",,"index=perfmon",
+"Splunk_TA_windows",true,"perfmon_logicaldisk","disk
+oshost
+performance
+storage","sourcetype=Perfmon:LogicalDisk OR sourcetype=PerfmonMk:LogicalDisk",
+"Splunk_TA_windows",true,"perfmon_memory","memory
+oshost
+performance
+report","sourcetype=Perfmon:Memory OR sourcetype=PerfmonMk:Memory",
+"Splunk_TA_windows",true,"perfmon_memory_anomalous",anomalous,"(sourcetype=Perfmon:Memory OR sourcetype=PerfmonMk:Memory) windows_mem_free<104857600",
+"Splunk_TA_windows",true,"perfmon_network","network
+oshost
+performance","sourcetype=Perfmon:Network OR sourcetype=PerfmonMk:Network",
+"Splunk_TA_windows",true,"perfmon_network_bandwidth","network
+oshost
+performance","(sourcetype=Perfmon:LocalNetwork OR sourcetype=PerfmonMk:Network OR sourcetype=Perfmon:Network) (counter=""Current Bandwidth"" OR Current_Bandwidth=*)",
+"Splunk_TA_windows",true,"perfmon_network_throughput","network
+oshost
+performance","(sourcetype=Perfmon:LocalNetwork OR sourcetype=PerfmonMk:Network OR sourcetype=Perfmon:Network) (counter=""Bytes Total/sec"" OR Bytes_Total/sec = *)",
+"Splunk_TA_windows",true,"perfmon_process","oshost
+performance
+process
+report","sourcetype=Perfmon:Process OR sourcetype=PerfmonMk:Process",
+"Splunk_TA_windows",true,"perfmon_processorinformation","cpu
+performance
+process
+report","(sourcetype=Perfmon:ProcessorInformation OR sourcetype=PerfmonMk:ProcessorInformation)",
+"Splunk_TA_windows",true,"perfmon_system","cpu
+oshost
+performance
+report","sourcetype=Perfmon:System OR sourcetype=PerfmonMk:System",
+"Splunk_TA_windows",true,"perfmon_windows","os
+windows
+windows_management","sourcetype=Perfmon:* OR sourcetype=PerfmonMk:* OR sourcetype=WMI:Perfmon*",
+"Splunk_TA_windows",true,powershell,,"source=Powershell",
+"Splunk_TA_windows",true,"printmon_windows","os
+windows","sourcetype=WinPrintMon",
+"Splunk_TA_nix",true,protocol,,"sourcetype=protocol",
+"Splunk_TA_nix",true,ps,"cpu
+oshost
+performance
+process
+ps
+success","sourcetype=ps",
+"Splunk_TA_nix",true,"remote_login_allowed","application
+authentication
+remote","(NOT sourcetype=stash) ""pam_rhosts_auth"" AND ""allowed to""",
+"Splunk_TA_nix",true,"remote_login_failure","application
+authentication
+remote","(NOT sourcetype=stash) ""pam_rhosts_auth"" AND (""denied to"" OR ""access not allowed"")",
+"Splunk_TA_nix",true,"rlogin_too_many_failures","application
+attack
+watchlist","(NOT sourcetype=stash) ""general syslog msg"" ""TOO MANY LOGIN TRIES""",
+"Splunk_TA_windows",true,"script_listeningports","listening
+port
+report","sourcetype=Script:ListeningPorts",
+"Splunk_TA_windows",true,"script_windows","os
+windows","sourcetype=Script:* source=*.bat",
+"Splunk_TA_nix",true,selinuxconfig,"application
+config
+selinux","sourcetype=Linux:SELinuxConfig",
+"DA-ITSI-CP-microsoft-exchange",true,"senderbase-reputation",,"eventtype=msexchange-index sourcetype=MSExchange:Reputation",
+"Splunk_TA_nix",true,service,"config
+os
+report
+service","(NOT sourcetype=WMI:Service) sourcetype=*:Service (NOT file_hash=*)",
+"Splunk_TA_nix",true,"service_runlevel_anomalous",anomalous,"sourcetype=*:Service (runlevel0=on OR runlevel6=on)",
+"DA-ITSI-CP-microsoft-exchange",true,"smtp-inbound",,"eventtype=msexchange-index sourcetype=MSExchange:*:MessageTracking source_id=SMTP event_id=RECEIVE",
+"DA-ITSI-CP-microsoft-exchange",true,"smtp-mail",,"eventtype=msexchange-index sourcetype=MSExchange:*:MessageTracking source_id=SMTP",
+"DA-ITSI-CP-microsoft-exchange",true,"smtp-outbound",,"eventtype=msexchange-index sourcetype=MSExchange:*:MessageTracking source_id=SMTP event_id=SEND",
+"Splunk_TA_nix",true,snmpd,"os
+snmp
+unix","(NOT sourcetype=stash) snmpd",
+"Splunk_TA_nix",true,"snmpd_failure",failure,"(NOT sourcetype=stash) snmpd SNMPD_*_FAILURE",
+"Splunk_TA_nix",true,"solaris_scripted_input","check
+report","sourcetype=Solaris:*",
+"Splunk_SA_CIM",true,"splunk_access","application
+authentication","index=_audit ""action=login attempt"" NOT ""action=search""",
+"Splunk_SA_CIM",true,"splunk_endpoint_change","endpoint
+filesystem","index=_audit action path isdir NOT ""action=search""",
+"Splunk_SA_CIM",true,"splunk_modalert",,"index=_internal sourcetype=splunkd component=sendmodalert",
+"Splunk_SA_CIM",true,"splunk_modalert_invocation",,"index=_internal sourcetype=splunkd component=sendmodalert ""Invoking modular alert action""",
+system,true,"splunkd-access",,"index=_internal source=*/splunkd_access.log OR source=*\\splunkd_access.log",
+system,true,"splunkd-log",,"index=_internal source=*/splunkd.log OR source=*\\splunkd.log",
+"Splunk_TA_nix",true,"ssh_check_pass",,"(NOT sourcetype=stash) sshd check pass user unknown (punct=""__*::_*_()[]:__;__"" OR punct=""*__::_*_[]:_(:):__;__"")",
+"Splunk_TA_nix",true,"ssh_close","access
+logoff
+stop","(NOT sourcetype=stash) punct=""*__::_*_[]:____*..."" OR punct=""*__::_*_[]:_(:):_____"" OR punct=""*__::_*_()[]:_____"" sshd (Closing connection to) OR (Connection closed by) OR (session closed)",
+"Splunk_TA_nix",true,"ssh_disconnect","access
+logoff
+stop","(NOT sourcetype=stash) punct=""*__::_*_[]:___*...:_:__""  Bye Received disconnect",
+"Splunk_TA_nix",true,"ssh_login_postponed",,"(NOT sourcetype=stash) punct=""*_::_*_[]:____*_...___"" sshd Postponed",
+"Splunk_TA_nix",true,"ssh_open","communicate
+connect","(NOT sourcetype=stash) punct=""*__::_*_[]:_(:):_____*__(=)"" sshd (session opened) OR (connection from)",
+"Splunk_TA_nix",true,"sshd_authentication","authentication
+remote","(NOT sourcetype=stash) NOT sourcetype=ossec ""sshd["" (((Accepted OR Failed OR failure OR ""Invalid user"" OR ""authentication error"") (from OR ())) OR ""Authorized to"" OR ""Authentication tried"" OR ""Login restricted"") NOT (""POSSIBLE BREAK-IN ATTEMPT"")",
+"Splunk_TA_nix",true,"sshd_insecure",insecure,"(NOT sourcetype=stash) sshd_protocol=*1*",
+"Splunk_TA_nix",true,sshdconfig,"application
+config
+ssh","sourcetype=*:SSHDConfig",
+"DA-ITSI-CP-microsoft-exchange",true,"storedriver-deliver",,"eventtype=msexchange-index sourcetype=MSExchange:*:MessageTracking (source_id=STOREDRIVER OR source_id=DUPLICATE) event_id=DELIVER",
+"DA-ITSI-CP-microsoft-exchange",true,"storedriver-mail",,"eventtype=msexchange-index sourcetype=MSExchange:*:MessageTracking (source_id=STOREDRIVER OR source_id=DUPLICATE) (event_id=DELIVER OR event_id=RECEIVE)",
+"DA-ITSI-CP-microsoft-exchange",true,"storedriver-receive",,"eventtype=msexchange-index sourcetype=MSExchange:*:MessageTracking source_id=STOREDRIVER event_id=RECEIVE",
+"Splunk_TA_nix",true,"su_authentication",authentication,"(NOT sourcetype=stash) NOT sourcetype=ossec NOT ""USER_CMD"" ((from to) OR succeeded OR success OR successful OR failed OR failure) (cmd=""su"" OR (""USER_AUTH"" AND exe=*/su*) OR ((NOT BAD) su: from to at))",
+"Splunk_TA_nix",true,"su_failed",authentication,"(NOT sourcetype=stash) ((""failed SU to another user"" AND ""Agent platform:"" AND ""linux-x86"") OR (""failed SU to another user"" AND ""authentication failure"" AND ""for su service"") OR (""failed SU to another user"" AND logname=*) OR (""BAD SU ""))",
+"Splunk_TA_nix",true,"su_root_session","privileged
+session","(NOT sourcetype=stash) su: session root",
+"Splunk_TA_nix",true,"su_session",session,"(NOT sourcetype=stash) su: session",
+"DA-ITSI-CP-microsoft-exchange",true,"summary-client-users",,"eventtype=summary-index search_name=si-client-users",
+"DA-ITSI-CP-microsoft-exchange",true,"summary-index",,"index=summary",
+"DA-ITSI-CP-microsoft-exchange",true,"summary-internet-mail",,"eventtype=summary-index search_name=si-msexchange-internet-mail",
+"DA-ITSI-CP-microsoft-exchange",true,"summary-mailbox-size",,"eventtype=summary-index search_name=si-msexchange-user-population",
+"DA-ITSI-CP-microsoft-exchange",true,"summary-user-mail",,"eventtype=summary-index search_name=si-msexchange-user-mail",
+"DA-ITSI-CP-microsoft-exchange",true,"summary-user-population",,"eventtype=summary-index search_name=si-msexchange-user-population",
+"lame_training",true,"SystemOfInterest_talkingOutbound",suspicous,"index=lame_training sourcetype=lame_conn  dest_ip=10.0.0.18  direction=""outbound""",
+"Splunk_TA_nix",true,time,"os
+report
+success
+time","sourcetype=time",
+"Splunk_TA_nix",true,top,"os
+process
+success
+top","sourcetype=top",
+"DA-ITSI-CP-microsoft-exchange",true,"transport-handling-service-perf","ms_ex_health
+ms_ex_health_transport_handling","eventtype=msperfmon-index sourcetype=""Perfmon:Total_Processor_Time"" OR 
+         sourcetype=""Perfmon:Process"" OR 
+         sourcetype=""Perfmon:Processor"" OR 
+         sourcetype=""Perfmon:CPU"" OR 
+         sourcetype=""Procmon:Processor"" OR 
+         sourcetype=""Procmon:System"" OR 
+         sourcetype=""Perfmon:Available_Memory"" OR 
+         sourcetype=""Perfmon:Memory"" OR 
+         sourcetype=""Perfmon:Network_Utilization"" OR 
+         sourcetype=""Perfmon:TCPv4"" OR 
+         sourcetype=""Perfmon:TCPv6"" OR 
+         sourcetype=""Perfmon:Disk"" OR 
+         sourcetype=""Perfmon:MSExchange_Queue_Lengths"" OR 
+         sourcetype=""Perfmon:MSExchange_Transport_Dumpster"" OR 
+         sourcetype=""Perfmon:MSExchange_Database_Edge_Transport"" OR 
+         sourcetype=""Perfmon:MSExchange_Extensibility_Agents"" OR 
+         (sourcetype=""Perfmon:MSExchange_Store_Driver"" AND (
+            counter=""Inbound: LocalDeliveryCallsPerSecond"" OR 
+            counter=""Outbound: Submitted Mail Items Per Second"" OR 
+            counter=""Inbound: MessageDeliveryAttemptsPerSecond"" OR 
+            counter=""Inbound: Recipients Delivered Per Second"" 
+            ) )",
+"DA-ITSI-CP-microsoft-exchange",true,"transport-handling-service-winhostmon","ms_ex_health
+ms_ex_health_transport_handling","eventtype=windows-index sourcetype=""WinHostMon"" (
+         Name=""W3SVC"" OR 
+         Name=""MSExchangeServiceHost"" OR 
+         Name=""MSExchangeADTopology"" OR 
+         Name=""MSExchangeAntispamUpdate"" OR 
+         Name=""MSExchangeEdgeSync"" OR 
+         Name=""MSExchangeSubmission"" OR 
+         Name=""MSExchangeMailSubmission"" OR 
+         Name=""MSExchangeDelivery"" OR 
+         Name=""MSExchangeMailboxReplication"" OR 
+         Name=""MSExchangeProtectedServiceHost"" OR 
+         Name=""MSExchangeTransport"" OR 
+         Name=""MSExchangeTransportLogSearch"" OR 
+         Name=""MSExchangeFastSearch"" 
+         )",
+"Splunk_TA_nix",true,"unix_scripted_input","check
+report","sourcetype=Unix:*",
+"Splunk_TA_nix",true,update,"info
+os
+system
+update","sourcetype=*:Update",
+"DA-ITSI-CP-windows-dashboards",true,"Update_Failed","Windows_Update","eventtype=wineventlog_index_windows OR eventtype=windows_index_windows eventtype=eventlog_Update_Failed OR eventtype=updatelog_Update_Failed",
+"Splunk_TA_nix",true,"update_status",status,"sourcetype=*:Update NOT total_updates",
+"DA-ITSI-CP-microsoft-exchange",true,"Update_Successful",,"eventtype=eventlog_Update_Successful OR eventtype=updatelog_Update_Successful",
+"DA-ITSI-CP-windows-dashboards",true,"Update_Successful_windows","Windows_Update","eventtype=wineventlog_index_windows OR eventtype=windows_index_windows eventtype=eventlog_Update_Successful_windows OR eventtype=updatelog_Update_Successful_windows",
+"DA-ITSI-CP-windows-dashboards",true,"updatelog_Update_Failed",,"sourcetype=""WindowsUpdateLog"" Failure ""Content Install"" ""Installation Failure""",
+"DA-ITSI-CP-microsoft-exchange",true,"updatelog_Update_Successful",,"eventtype=windows-index sourcetype=""WindowsUpdateLog"" ""Content Install"" ""Installation Successful""",
+"DA-ITSI-CP-windows-dashboards",true,"updatelog_Update_Successful_windows",,"sourcetype=""WindowsUpdateLog"" ""Content Install"" ""Installation Successful""",
+"Splunk_TA_nix",true,uptime,"info
+os
+performance
+report
+uptime","(NOT sourcetype=WMI:Uptime) sourcetype=*:Uptime",
+"Splunk_TA_nix",true,"uptime_anomalous",anomalous,"(NOT sourcetype=WMI:Uptime) sourcetype=*:Uptime SystemUpTime>2592000",
+"Splunk_TA_nix",true,useraccounts,"config
+inventory
+user","sourcetype=*:UserAccounts (NOT file_hash=*)",
+"Splunk_TA_nix",true,"useraccounts_anomalous",anomalous,"sourcetype=*:UserAccounts NOT password=x NOT password=\* (NOT file_hash=*)",
+"Splunk_TA_nix",true,useradd,"account
+add
+change
+management","(NOT sourcetype=stash) useradd user",
+"Splunk_TA_nix",true,"useradd-suse","account
+add
+change
+management","(NOT sourcetype=stash) useradd new account added",
+"Splunk_TA_nix",true,userdel,"account
+change
+delete
+management","(NOT sourcetype=stash) userdel user",
+"Splunk_TA_nix",true,usersWithLoginPrivs,,"sourcetype=usersWithLoginPrivs",
+"Splunk_TA_nix",true,vmstat,"cpu
+memory
+oshost
+performance
+report
+resource
+success
+vmstat","sourcetype=vmstat",
+"Splunk_TA_nix",true,"vsftpd_config","application
+cleartext
+config
+ftp","sourcetype=*:VSFTPDConfig",
+"Splunk_TA_nix",true,"vsftpd_config_anonymous",anonymous,"sourcetype=*:VSFTPDConfig anonymous_enable=YES",
+"Splunk_TA_nix",true,who,,"sourcetype=who",
+"Splunk_TA_windows",true,winapp,,"eventtype=wineventlog_application",
+"DA-ITSI-CP-microsoft-exchange",true,"windows-index",,"index=windows",
+"Splunk_TA_windows",true,"windows_account_created","account
+add
+change","eventtype=wineventlog_security (EventCode=4720 OR EventCode=4741 OR EventCode=624 OR EventCode=645)",
+"Splunk_TA_windows",true,"windows_account_deleted","account
+change
+delete","eventtype=wineventlog_security (EventCode=4726 OR EventCode=4743 OR EventCode=630 OR EventCode=647)",
+"Splunk_TA_windows",true,"windows_account_disabled","account
+change
+disable","eventtype=wineventlog_security (EventCode=4725 OR EventCode=629)",
+"Splunk_TA_windows",true,"windows_account_enabled","account
+change
+enable","eventtype=wineventlog_security (EventCode=4722 OR EventCode=626)",
+"Splunk_TA_windows",true,"windows_account_lockout","account
+change
+lock
+lockout","eventtype=wineventlog_security (EventCode=4740 OR EventCode=644)",
+"Splunk_TA_windows",true,"windows_account_management","account
+change
+management","eventtype=wineventlog_security (ta_windows_security_CategoryString=""Account Management"" OR TaskCategory=""User Account Management"")",
+"Splunk_TA_windows",true,"windows_account_mapped",authentication,"eventtype=wineventlog_security (EventCode=4774 OR EventCode=678)",
+"Splunk_TA_windows",true,"windows_account_modified","account
+change
+modify","eventtype=wineventlog_security (EventCode=4738 OR EventCode=4742 OR EventCode=642 OR EventCode=646 OR EventCode=625)",
+"Splunk_TA_windows",true,"windows_account_notmapped",authentication,"eventtype=wineventlog_security (EventCode=4775 OR EventCode=679)",
+"Splunk_TA_windows",true,"windows_account_password_change","account
+change
+modify
+password","eventtype=wineventlog_security (EventCode=4723 OR EventCode=627)",
+"Splunk_TA_windows",true,"windows_account_password_set","account
+change
+modify
+password","eventtype=wineventlog_security (EventCode=4724 OR EventCode=628)",
+"Splunk_TA_windows",true,"windows_account_unlocked","account
+change
+modify","eventtype=wineventlog_security (EventCode=4767 OR EventCode=671)",
+"Splunk_TA_windows",true,"windows_account_used4logon",authentication,"eventtype=wineventlog_security (EventCode=4776 OR EventCode=4777 OR EventCode=680 OR EventCode=681)",
+"Splunk_TA_windows",true,"windows_audit_backup","audit
+backup
+change","eventtype=wineventlog_security EventCode=1105",
+"Splunk_TA_windows",true,"windows_audit_errors","audit
+error","eventtype=wineventlog_security (EventCode=1101 OR EventCode=1104 OR EventCode=1108)",
+"Splunk_TA_windows",true,"windows_audit_log_cleared","audit
+change
+cleared
+delete
+watchlist","eventtype=wineventlog_security (EventCode=1102 OR EventCode=517)",
+"Splunk_TA_windows",true,"windows_audit_log_logon","audit
+change","eventtype=wineventlog_security EventCode=4625 (ta_windows_status=0xC0000064 OR ta_windows_status=0xC000006A OR ta_windows_status=0xC000006F OR ta_windows_status=0xC0000070 OR ta_windows_status=0xC0000071 OR ta_windows_status=0xC0000072 OR ta_windows_status=0XC000018C OR ta_windows_status=0XC0000192 OR ta_windows_status=0xC0000193 OR ta_windows_status=0xC0000234 OR ta_windows_status=0XC00002EE OR ta_windows_status=0XC0000413)",
+"Splunk_TA_windows",true,"windows_audit_log_stopped","stop
+stopped
+watchlist","eventtype=wineventlog_security EventCode=1100",
+"Splunk_TA_windows",true,"windows_audit_policy_change","audit
+change
+configuration
+modify
+policy","eventtype=wineventlog_security (EventCode=4715 OR EventCode=4719 OR EventCode=612)",
+"Splunk_TA_windows",true,"windows_audit_policy_changed","audit
+change
+configuration
+modify
+policy","eventtype=wineventlog_security (EventCode=4912 OR EventCode=807)",
+"Splunk_TA_windows",true,"windows_auth_package","execute
+process
+start","eventtype=wineventlog_security (EventCode=4610 OR EventCode=514)",
+"Splunk_TA_windows",true,"windows_auth_ticket_granted",authentication,"eventtype=wineventlog_security (EventCode=4768 OR EventCode=672 OR EventCode=676)",
+"Splunk_TA_windows",true,"windows_endpoint_processes","process
+report","(source=""WinEventLog:Security"" OR source=""XmlWinEventLog:Security"") (EventCode=4688 OR EventCode=4689 OR EventCode=4696 OR EventCode=4673 OR EventCode=4674)",
+"Splunk_TA_windows",true,"windows_endpoint_services","report
+service","(source=""WinEventLog:Security"" OR source=""XmlWinEventLog:Security"" OR source=""WinEventLog:System"" OR source=""XmlWinEventLog:System"") (EventCode=1100 OR EventCode=4697 OR EventCode=5024 OR EventCode=5025 OR EventCode=5030 OR EventCode=5033 OR EventCode=5034 OR EventCode=5035 OR EventCode=5478 OR EventCode=7036 OR EventCode=7040 OR EventCode=7045)",
+"Splunk_TA_windows",true,"windows_event_signature","track_event_signatures","sourcetype=WinEventLog OR sourcetype=XmlWinEventLog OR sourcetype=WMI:WinEventLog:System OR sourcetype=WMI:WinEventLog:Security OR sourcetype=WMI:WinEventLog:Application OR sourcetype=wineventlog OR sourcetype=xmlwineventlog",
+"Splunk_TA_windows",true,"windows_firewall_policy_active","application
+configuration
+firewall
+report","eventtype=wineventlog_security (EventCode=848 OR EventCode=849 OR EventCode=850)",
+"Splunk_TA_windows",true,"windows_firewall_policy_change","application
+configuration
+firewall
+modify","eventtype=wineventlog_security (EventCode=4946 OR EventCode=4947 OR EventCode=4948 OR EventCode=851 OR EventCode=852)",
+"Splunk_TA_windows",true,"windows_firewall_port_listening","application
+firewall
+listening
+port
+report","eventtype=wineventlog_security (EventCode=4957 OR EventCode=861)",
+"Splunk_TA_windows",true,"windows_handle_closed","access
+file
+resource
+stop","eventtype=wineventlog_security (EventCode=4658 OR EventCode=562)",
+"DA-ITSI-CP-windows-dashboards",true,"windows_index_windows",,"index=windows",
+"Splunk_TA_windows",true,"windows_logoff","access
+logoff
+stop","eventtype=wineventlog_security (EventCode=4634 OR EventCode=4647 OR EventCode=538 OR EventCode=551)",
+"Splunk_TA_windows",true,"windows_logon_explicit","authentication
+privileged","eventtype=wineventlog_security (EventCode=4648 OR EventCode=552)",
+"Splunk_TA_windows",true,"windows_logon_failure",authentication,"eventtype=wineventlog_security ((EventCode=4625 AND ta_windows_action!=error) OR EventCode=529 OR EventCode=530 OR EventCode=531 OR EventCode=532 OR EventCode=533 OR EventCode=534 OR EventCode=535 OR EventCode=536 OR EventCode=537 OR EventCode=539)",
+"Splunk_TA_windows",true,"windows_logon_process","add
+authorization
+process","eventtype=wineventlog_security (EventCode=4611 OR EventCode=515)",
+"Splunk_TA_windows",true,"windows_logon_success",authentication,"eventtype=wineventlog_security (EventCode=4624 OR EventCode=528 OR EventCode=540)",
+"Splunk_TA_windows",true,"windows_notification_package","execute
+process
+start","eventtype=wineventlog_security (EventCode=4614 OR EventCode=518)",
+"Splunk_TA_windows",true,"windows_object_open","access
+file
+resource
+start","eventtype=wineventlog_security (EventCode=4656 OR EventCode=560)",
+"Splunk_TA_windows",true,"windows_pre_auth_failed",authentication,"eventtype=wineventlog_security (EventCode=4771 OR EventCode=675)",
+"Splunk_TA_windows",true,"windows_privileged_object_operation","execute
+privileged
+resource
+start","eventtype=wineventlog_security (EventCode=4674 OR EventCode=578)",
+"Splunk_TA_windows",true,"windows_privileged_service_call","execute
+privileged
+process
+start","eventtype=wineventlog_security (EventCode=4673 OR EventCode=577)",
+"Splunk_TA_windows",true,"windows_process_exit","execute
+process
+stop","eventtype=wineventlog_security (EventCode=4689 OR EventCode=593)",
+"Splunk_TA_windows",true,"windows_process_new","execute
+process
+start","eventtype=wineventlog_security (EventCode=4688 OR EventCode=592)",
+"Splunk_TA_windows",true,"windows_process_token","execute
+privileged
+process
+start","eventtype=wineventlog_security (EventCode=4696 OR EventCode=600)",
+"Splunk_TA_windows",true,"windows_security_access_granted","access
+account
+add
+authorization
+change","eventtype=wineventlog_security (EventCode=4717 OR EventCode=621)",
+"Splunk_TA_windows",true,"windows_security_access_removed","access
+account
+authorization
+change
+delete","eventtype=wineventlog_security (EventCode=4718 OR EventCode=622)",
+"Splunk_TA_windows",true,"windows_security_authentication",authentication,"(source=WinEventLog:Security OR source=XmlWinEventLog:Security) (EventCode=4624 OR EventCode=4625)",
+"Splunk_TA_windows",true,"windows_security_change",change,"(source=WinEventLog:Security OR source=XmlWinEventLog:Security) (EventCode=5461 OR EventCode=4698 OR EventCode=4700 OR EventCode=4701 OR EventCode=4702)",
+"Splunk_TA_windows",true,"windows_security_change_account","account
+change","(source=WinEventLog:Security OR source=XmlWinEventLog:Security) AND EventCode IN (4634,4703,4704,4705,4720,4722,4723,4724,4725,4726,4732,4738,4740,4767,4781,4800,4801)",
+"Splunk_TA_windows",true,"windows_security_change_audit","audit
+change","(source=WinEventLog:Security OR source=XmlWinEventLog:Security) (EventCode=1101 OR EventCode=1108 OR EventCode=4719 OR EventCode=1102)",
+"Splunk_TA_windows",true,"windows_security_endpoint_port","listening
+port","(source=WinEventLog:Security OR source=XmlWinEventLog:Security) (EventCode=5158)",
+"Splunk_TA_windows",true,"windows_security_endpoint_registry","endpoint
+registry","(source=WinEventLog:Security OR source=XmlWinEventLog:Security) (EventCode=4657 OR (EventCode=4670 AND (Object_Type=""Registry"" OR ObjectType=""Registry"")))",
+"Splunk_TA_windows",true,"windows_security_misconfiguration_password_minimum_length","audit
+change
+misconfiguration
+password
+policy
+report
+vulnerability","eventtype=wineventlog_security EventCode=""4739"" (Min__Password_Length<7 OR Mixed_Domain_Mode<7)",
+"Splunk_TA_windows",true,"windows_service_ticket_granted",authentication,"eventtype=wineventlog_security (EventCode=4769 OR EventCode=4773 OR EventCode=673 OR EventCode=677)",
+"Splunk_TA_windows",true,"windows_session_disconnected","access
+logoff
+stop","eventtype=wineventlog_security (EventCode=4779 OR EventCode=683)",
+"Splunk_TA_windows",true,"windows_session_reconnected",,"eventtype=wineventlog_security (EventCode=4778 OR EventCode=682)",
+"Splunk_TA_windows",true,"windows_special_privileges","authentication
+privileged","eventtype=wineventlog_security (EventCode=4672 OR EventCode=576)",
+"Splunk_TA_windows",true,"windows_system_change_audit","audit
+change","(source=WinEventLog:System OR source=XmlWinEventLog:System) (EventCode=104)",
+"Splunk_TA_windows",true,"windows_system_update","system
+update","eventtype=wineventlog_system ""Windows Update Agent""",
+"Splunk_TA_windows",true,"windows_system_update_status",status,"eventtype=wineventlog_system ""Windows Update Agent"" (EventCode=17 OR EventCode=18 OR EventCode=19)",
+"Splunk_TA_windows",true,"windows_ticket_renewed",,"eventtype=wineventlog_security (EventCode=4770 OR EventCode=674)",
+"Splunk_TA_windows",true,"windows_time_failure","failure
+performance
+report
+synchronize
+time","(eventtype=wineventlog_system (SourceName=W32Time OR Microsoft-Windows-Time-Service) (EventCode=17 OR EventCode=29 OR EventCode=36 OR EventCode=38)) OR (sourcetype=Script:TimesyncStatus windows_action=failure)",
+"Splunk_TA_windows",true,"windows_time_sync","performance
+report
+success
+synchronize
+time","(eventtype=wineventlog_system (SourceName=W32Time OR SourceName=Microsoft-Windows-Time-Service) (EventCode=35 OR EventCode=37)) OR (sourcetype=Script:TimesyncStatus windows_action=success)",
+"Splunk_TA_windows",true,"windows_updatelog","system
+update","sourcetype=WindowsUpdateLog",
+"Splunk_TA_windows",true,"windows_updatelog_status",status,"sourcetype=WindowsUpdateLog ""Content Install"" NOT ""Download Succeeded"" NOT ""Reboot Completed"" NOT ""Hide Update""",
+"Splunk_TA_windows",true,"windowsupdatelog_windows","os
+windows","sourcetype=WindowsUpdateLog",
+"Splunk_TA_windows",true,"wineventlog-dfs",,"source=""WinEventLog:DFS Replication"" OR source=""XmlWinEventLog:DFS Replication""",
+"Splunk_TA_windows",true,"wineventlog-dns",,"source=""WinEventLog:DNS Server"" OR source=""XmlWinEventLog:DNS Server""",
+"Splunk_TA_windows",true,"wineventlog-ds",,"source=""WinEventLog:Directory Service"" OR source=""XmlWinEventLog:Directory Service""",
+"Splunk_TA_windows",true,"wineventlog-filereplication",,"source=""WinEventLog:File Replication Service"" OR source=""XmlWinEventLog:File Replication Service""",
+"DA-ITSI-CP-microsoft-exchange",true,"wineventlog-index",,"index=wineventlog",
+"Splunk_TA_windows",true,"wineventlog-keymanagement",,"source=""WinEventLog:Key Management Service"" OR source=""XmlWinEventLog:Key Management Service""",
+"DA-ITSI-CP-microsoft-exchange",true,"wineventlog_application","os
+windows","eventtype=wineventlog-index source=WinEventLog:Application OR source=WMI:WinEventLog:Application OR source=XmlWinEventLog:Application",
+"Splunk_TA_windows",true,"wineventlog_application","os
+windows","source=WinEventLog:Application OR source=WMI:WinEventLog:Application OR source=XmlWinEventLog:Application",
+"DA-ITSI-CP-windows-dashboards",true,"wineventlog_common",,"eventtype=wineventlog_index_windows eventtype=wineventlog_windows OR source = ""WinEventLog:DFS Replication"" OR source = ""WinEventLog:Directory Service"" OR source = ""WinEventLog:File Replication Service"" OR source = ""WinEventLog:Key Management Service"" OR source=""WinEventLog:DNS Server"" OR source=""WinEventLog:Exchange Auditing""",
+"DA-ITSI-CP-windows-dashboards",true,"wineventlog_index_windows",,"index=wineventlog",
+"Splunk_TA_windows",true,"wineventlog_security","os
+windows","source=WinEventLog:Security OR source=WMI:WinEventLog:Security OR source=XmlWinEventLog:Security",
+"DA-ITSI-CP-microsoft-exchange",true,"wineventlog_security","os
+windows","source=WinEventLog:Security OR source=WMI:WinEventLog:Security OR source=XmlWinEventLog:Security",
+"Splunk_TA_windows",true,"wineventlog_system","os
+windows","source=WinEventLog:System OR source=WMI:WinEventLog:System OR source=XmlWinEventLog:System",
+"Splunk_TA_windows",true,"wineventlog_windows","os
+windows
+windows_management","eventtype=wineventlog_application OR eventtype=wineventlog_system OR eventtype=wineventlog_security OR eventtype=wineventlog-ds OR eventtype=wineventlog-dfs OR eventtype=wineventlog-keymanagement OR eventtype=wineventlog-filereplication OR eventtype=wineventlog-dns",
+"DA-ITSI-CP-microsoft-exchange",true,"winhostmon-index","ms_ex_health_events","eventtype=windows-index sourcetype=""WinHostMon""",
+"Splunk_TA_windows",true,"winregistry_windows","change
+endpoint
+os
+registry
+windows","sourcetype=WinRegistry",
+"Splunk_TA_windows",true,winsec,security,"eventtype=wineventlog_security",
+"Splunk_TA_windows",true,winsystem,,"eventtype=wineventlog_system",
+"Splunk_TA_nix",true,"wksh_authentication",,"(NOT sourcetype=stash) NOT sourcetype=ossec wksh ""HANDLING TELNET CALL""",
+"Splunk_TA_windows",true,"wmi_computersystem","memory
+performance","sourcetype=WMI:ComputerSystem",
+"Splunk_TA_windows",true,"wmi_cputime","cpu
+performance
+report","sourcetype=WMI:CPUTime",
+"Splunk_TA_windows",true,"wmi_cputime_anomalous",anomalous,"sourcetype=WMI:CPUTime windows_percent_processor_time>90",
+"Splunk_TA_windows",true,"wmi_freediskspace","disk
+performance
+report
+storage","sourcetype=WMI:FreeDiskSpace",
+"Splunk_TA_windows",true,"wmi_freediskspace_anomalous",anomalous,"sourcetype=WMI:FreeDiskSpace windows_storage_free_percent<10",
+"Splunk_TA_windows",true,"wmi_installed_packages","status
+system
+update","sourcetype=WMI:InstalledUpdates",
+"Splunk_TA_windows",true,"wmi_localprocesses","process
+report","sourcetype=WMI:LocalProcesses",
+"Splunk_TA_windows",true,"wmi_localprocesses_anomalous",anomalous,"sourcetype=WMI:LocalProcesses (windows_cpu_load_percent>50) NOT windows_app=*Total",
+"Splunk_TA_windows",true,"wmi_logicaldisk","disk
+performance
+storage","sourcetype=WMI:LogicalDisk",
+"Splunk_TA_windows",true,"wmi_memory","memory
+performance
+report","sourcetype=WMI:Memory",
+"Splunk_TA_windows",true,"wmi_memory_anomalous",anomalous,"sourcetype=WMI:Memory windows_mem_free<104857600",
+"Splunk_TA_windows",true,"wmi_network_bandwidth","network
+performance","sourcetype=WMI:LocalNetwork CurrentBandwidth=*",
+"Splunk_TA_windows",true,"wmi_network_throughput","network
+performance","sourcetype=WMI:LocalNetwork BytesTotalPersec=*",
+"Splunk_TA_windows",true,"wmi_service","report
+service","sourcetype=WMI:Service",
+"Splunk_TA_windows",true,"wmi_service_state_anomalous",anomalous,"sourcetype=WMI:Service windows_start_mode=Auto windows_state=* NOT windows_state=Running",
+"Splunk_TA_windows",true,"wmi_service_status_anomalous",anomalous,"sourcetype=WMI:Service Status=* NOT Status=OK",
+"Splunk_TA_windows",true,"wmi_uptime","performance
+report
+uptime","sourcetype=WMI:Uptime",
+"Splunk_TA_windows",true,"wmi_uptime_anomalous",anomalous,"sourcetype=WMI:Uptime windows_uptime>2592000",
+"Splunk_TA_windows",true,"wmi_useraccounts","account
+inventory
+report
+user","sourcetype=WMI:UserAccounts",
+"Splunk_TA_windows",true,"wmi_version","inventory
+report
+system
+version","sourcetype=WMI:Version",
+"Splunk_TA_windows",true,"wmi_windows","os
+windows","sourcetype=WMI:*",

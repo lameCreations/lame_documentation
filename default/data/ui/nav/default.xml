@@ -1,0 +1,43 @@
+<nav search_view="search">
+
+  
+  <collection label="Documentation">
+	  <view name="list_of_macros" />
+  	  <view name="list_of_dashboards" />
+    <view name="visual_about_a_dashboard" />
+  	  <view name="list_of_saved_searches" />
+  	  <view name="list_of_alerts" />
+	  <view name="list_of_lookups" />
+  	  <view name="list_of_eventtypes" />
+  	  <view name="list_of_indexes" />
+	  <view name="list_of_summary_indexes_" />
+  	  <view name="list_of_sourcetypes" />
+      <view name="sourcetype_analytics"/>
+    
+	<a href="../../static/app/lame_documentation/CS_doc.htm">Full Documentation (in dev)</a>	
+	
+
+  </collection>
+  <collection label="Add to Documentation">
+    <view name="add_sourcetype_analytics"/>
+    <view name="add_sourcetype_fields"/>
+    <view name="add_dashboard_details"/>
+    <view name="add_saved_search_details"/>
+  </collection>
+  
+  
+  <collection label="Audit">
+    <view name="audit_dashboards" />
+    <view name="analytics_and_knowledge_object_overview"/>
+    <view name="knowledge_objects_wo_custom_descriptions"/>
+  </collection>
+
+    <collection label="Splunk">
+      <view name="search"  label="Search" default='true' />
+  		<view name="pivot" />
+ 		<view name="reports" />
+  		<view name="alerts" />
+  		<view name="dashboards" />
+  	</collection >
+  
+</nav>

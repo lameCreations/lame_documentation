@@ -1,0 +1,187 @@
+[app/ui]
+version = 9.0.3
+modtime = 1678427354.380295000
+
+[app/launcher]
+version = 9.0.3
+modtime = 1678427354.386908000
+
+[lookups/index_details.csv]
+version = 9.0.3
+modtime = 1678463550.816911000
+
+[nav/default]
+version = 9.0.3
+modtime = 1678590926.565297000
+
+[views/list_of_indexes]
+owner = admin
+version = 9.0.3
+modtime = 1678657752.447901000
+
+[views/list_of_summary_indexes_]
+owner = admin
+version = 9.0.3
+modtime = 1678657792.708141000
+
+[views/list_of_sourcetypes]
+owner = admin
+version = 9.0.3
+modtime = 1678657842.133740000
+
+[views/sourcetype_analytics]
+owner = admin
+version = 9.0.3
+modtime = 1678657923.135100000
+
+[views/add_sourcetype_analytics]
+owner = admin
+version = 9.0.3
+modtime = 1678657976.322251000
+
+[views/add_sourcetype_fields]
+owner = admin
+version = 9.0.3
+modtime = 1678658001.640869000
+
+[views/audit_dashboards]
+owner = admin
+version = 9.0.3
+modtime = 1678659938.281867000
+
+[views/analytics_and_knowledge_object_overview]
+owner = admin
+version = 9.0.3
+modtime = 1678658089.491628000
+
+[lookups/Sourcetype_Field_Info.csv]
+owner = admin
+version = 9.0.3
+modtime = 1678468824.131569000
+
+[lookups/Sourcetype_Analytics.csv]
+owner = admin
+version = 9.0.3
+modtime = 1678469220.108598000
+
+[views/list_of_dashboards]
+owner = admin
+version = 9.0.3
+modtime = 1678637174.901043000
+
+[views/list_of_saved_searches]
+owner = admin
+version = 9.0.3
+modtime = 1678657699.330944000
+
+[views/knowledge_objects_wo_custom_descriptions]
+owner = admin
+version = 9.0.3
+modtime = 1678667814.294849000
+
+[views/add_dashboard_details]
+owner = admin
+version = 9.0.3
+modtime = 1678728099.894774000
+
+[views/add_saved_search_details]
+owner = admin
+version = 9.0.3
+modtime = 1678667622.426187000
+
+[lookups/sourcetype_details.csv]
+version = 9.0.3
+modtime = 1678589174.935020000
+
+[savedsearches/Generate_sourcetype_details]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678590172.097968000
+
+[lookups/source_details.csv]
+version = 9.0.3
+modtime = 1678589401.950433000
+
+[savedsearches/Generate%20Source%20Details]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678634323.111992000
+
+[savedsearches/Generate%20Index%20Details]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678634255.126494000
+
+[savedsearches/Generate%20Macro%20Details]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678590140.481860000
+
+[savedsearches/Generate%20EventType%20Details]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678590111.231803000
+
+[savedsearches/Generate%20Saved%20Search%20Details]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678667279.387583000
+
+[savedsearches/Generate%20Dashboard%20Details]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678667249.671392000
+
+[panels/helpbanner]
+access = read : [ * ], write : [ * ]
+export = none
+owner = admin
+version = 9.0.3
+modtime = 1678637147.101922000
+
+[]
+access = read : [ * ], write : [ admin, power ]
+
+### EVENT TYPES
+
+[eventtypes]
+export = system
+
+
+### PROPS
+
+[props]
+export = system
+
+
+### TRANSFORMS
+
+[transforms]
+export = system
+
+
+### LOOKUPS
+
+[lookups]
+export = system
+
+
+### VIEWSTATES: even normal users should be able to create shared viewstates
+
+[viewstates]
+access = read : [ * ], write : [ * ]
+export = system

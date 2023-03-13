@@ -1,0 +1,153 @@
+<form version="1.1">
+  <label>Knowledge Objects w/o Custom Descriptions</label>
+  <description>Get List of Knowledge Objects Without User Input Descriptions</description>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="dropdown" token="app">
+      <label>App Context</label>
+      <choice value="*">*</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>eai:acl.app</fieldForLabel>
+      <fieldForValue>eai:acl.app</fieldForValue>
+      <search>
+        <query>| rest splunk_server=local /servicesNS/-/-/data/ui/views 
+| stats count by eai:acl.app
+| fields eai:acl.app
+| sort by eai:acl.app</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="ko">
+      <label>Knowledge Object</label>
+      <choice value="dashboard">dashboard</choice>
+      <choice value="eventtype">eventtype</choice>
+      <choice value="macro">macro</choice>
+      <choice value="savedsearch">savedsearch</choice>
+      <change>
+        <condition label="dashboard">
+          <set token="dashboard_token">true</set>
+          <unset token="eventtype_token"></unset>
+          <unset token="macro_token"></unset>
+          <unset token="savedsearch_token"></unset>
+        </condition>
+        <condition label="eventtype">
+          <unset token="dashboard_token"></unset>
+          <set token="eventtype_token">true</set>
+          <unset token="macro_token"></unset>
+          <unset token="savedsearch_token"></unset>
+        </condition>
+        <condition label="macro">
+          <unset token="dashboard_token"></unset>
+          <unset token="eventtype_token"></unset>
+          <set token="macro_token">true</set>
+          <unset token="savedsearch_token"></unset>
+        </condition>
+        <condition label="savedsearch">
+          <unset token="dashboard_token"></unset>
+          <unset token="eventtype_token"></unset>
+          <unset token="macro_token"></unset>
+          <set token="savedsearch_token">true</set>
+        </condition>
+      </change>
+    </input>
+  </fieldset>
+  <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row depends="$savedsearch_token$">
+    <panel>
+      <title>Saved Searches Without User Input</title>
+      <table>
+        <search depends="$savedsearch_token$">
+          <query>| rest /servicesNS/-/-/saved/searches splunk_server=local
+| search eai:acl.app="$app$" AND author!="nobody" 
+| lookup saved_search_details.csv title as title output details, mitre, usecase
+| fillnull value="TBD" usecase, mitre, details
+| search details="TBD"
+| table title, eai:acl.app, actions, cron_schedule, action.summary_index._name, details, mitre, usecase</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">/app/lame_documentation/add_saved_search_details?form.title=$row.title$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row depends="$dashboard_token$">
+    <panel>
+      <table>
+        <title>Dashboards Without User Input</title>
+        <search depends="$dashboard_token$">
+          <query>| rest splunk_server=local /servicesNS/-/-/data/ui/views
+| search author!="nobody" eai:acl.app="$app$"
+| lookup dashboard_details.csv id as id output details, mitre, usecase
+| fillnull value="TBD" usecase, mitre, details
+| search details="TBD"
+| rex field="id" "(?&lt;urlField&gt;[^\/]+)$"
+| eval httpAddress="https://127.0.0.1:8089/servicesNS/nobody/"
+| table  urlField eai:acl.app eai:acl.owner details, mitre, usecase, httpAddress
+| rename eai:acl.app as app eai:acl.owner as owner</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <condition field="urlField">
+            <eval token="u">$row.urlField$</eval>
+            <eval token="w">$row.app$</eval>
+            <eval token="url">$row.httpAddress$</eval>
+            <eval token="q">https://127.0.0.1:8089/servicesNS/nobody/$w$/data/ui/views/$u$</eval>
+            <link target="_blank">
+              <![CDATA[/app/lame_documentation/add_dashboard_details?form.app=$row.app$&form.urlField=$row.urlField$&form.dURL=$url$$w$/data/ui/views/$u$]]>
+            </link>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row depends="$macro_token$">
+    <panel>
+      <table>
+        <title>Macros Without User Input</title>
+        <search depends="$macro_token$">
+          <query>| rest splunk_server=local /servicesNS/-/-/admin/macros
+| search eai:acl.app="$app$" AND author!="nobody"
+| lookup macros_details.csv title as title output Details
+| fillnull value="TBD" Details
+| search Details="TBD"
+| table title, args, eai:acl.app, definition Details
+| rename eai:acl.app as app</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row depends="$eventtype_token$">
+    <panel>
+      <table>
+        <title>Eventtypes Without User Input</title>
+        <search depends="$eventtype_token$">
+          <query>| rest servicesNS/-/-/saved/eventtypes
+          | search eai:acl.app="$app$"
+| rename eai:acl.app as app
+| lookup eventtype_details.csv title as title output details
+| eval disabled=case(disabled=0, "true", disabled=1, "false")
+| fillnull value="TBD" details
+| search details="TBD"
+| table app, disabled, title, tags, search, details</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

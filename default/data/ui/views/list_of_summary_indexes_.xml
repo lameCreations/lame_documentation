@@ -1,0 +1,53 @@
+<form version="1.1">
+  <label>List of Summary Indexes</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="index">
+      <label>Index</label>
+      <choice value="*">*</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>index</fieldForLabel>
+      <fieldForValue>index</fieldForValue>
+      <search>
+        <query>| eventcount summarize=false index=*  | stats count by index  | fields index</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="myType">
+      <label>Type</label>
+      <choice value="*">All</choice>
+      <choice value="N/A">N/A</choice>
+      <fieldForLabel>usegroup</fieldForLabel>
+      <fieldForValue>usegroup</fieldForValue>
+      <search>
+        <query>| inputlookup source_details.csv | stats count by usegroup | sort - usegroup
+| fields usegroup</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| metadata index=$index$ type=sources
+| lookup source_details.csv source as source output description as description usegroup as usegroup
+| fillnull value="N/A" usegroup
+| search usegroup = "$myType$"
+| table source, totalCount, description, usegroup</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

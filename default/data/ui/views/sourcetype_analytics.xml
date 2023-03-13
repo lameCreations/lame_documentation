@@ -1,0 +1,85 @@
+<form version="1.1">
+  <label>Sourcetype Analytics</label>
+  <description>Gathers the analytics that are associated with a chosen sourcetype</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="idx">
+      <label>Index</label>
+      <fieldForLabel>index</fieldForLabel>
+      <fieldForValue>index</fieldForValue>
+      <search>
+        <query>| eventcount summarize=false index=* | stats count by index | fields index</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="src_type">
+      <label>Sourcetype</label>
+      <fieldForLabel>sourcetype</fieldForLabel>
+      <fieldForValue>sourcetype</fieldForValue>
+      <search>
+        <query>| metadata index=$idx$ type=sourcetypes | fields sourcetype</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+  </fieldset>
+   <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Field Breakdown</title>
+      <table>
+        <search>
+          <query>| inputlookup Sourcetype_Field_Info.csv 
+| search sourcetype=$src_type$
+| eval fieldvalue = case(fieldvalue=1, "Useless", fieldvalue=5, "Mostly Useless", fieldvalue=10, "Useful")
+| table fieldname, fieldvalue, rationale, fieldvalue</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Potential Analytics</title>
+      <table>
+        <search>
+          <query>| inputlookup Sourcetype_Analytics.csv | search index=$idx$ sourcetype=$src_type$ | table metric_description, metric_query</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Current Dashboards Using Queries With This Sourcetype</title>
+      <table>
+        <search>
+          <query>| rest splunk_server=local /servicesNS/-/-/data/ui/views
+| search eai:acl.app=* AND author!="nobody"
+
+| rex field="id" "(?&lt;urlField&gt;[^\/]+)$"
+
+``` extract the whole query ```
+| rex field=eai:data "(?s)&lt;query&gt;(?&lt;queries&gt;.*?)&lt;\/query&gt;.*?" max_match=0
+
+| rename eai:acl.app as myapp
+
+| mvexpand queries
+
+| search queries="*$src_type$*"
+| table urlField, myapp, author, queries</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

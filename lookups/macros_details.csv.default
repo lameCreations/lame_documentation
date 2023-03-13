@@ -1,0 +1,1522 @@
+title,args,app,definition,Details
+AnyTime,,trackme,"eval time_filtering=""false"" | fields - time_filtering",
+"apply_blacklist_rex(2)","collection, key",trackme,"| inputlookup $collection$ | `detect_rex($key$)` | where is_rex=""true"" | table $key$ | format
+| fields search
+| rex field=search mode=sed ""s/$key$=/match($key$, /g""
+| rex field=search mode=sed ""s/\( match/match/g""
+| rex field=search mode=sed ""s/NOT \(\)/match($key$, \""null\"")/g"" | return $search",
+"apply_blacklist_rex(3)","collection, key, newkey",trackme,"| inputlookup $collection$ | `detect_rex($key$)` | where is_rex=""true"" | table $key$ | rename $key$ as $newkey$ | format
+| fields search
+| rex field=search mode=sed ""s/$newkey$=/match($newkey$, /g""
+| rex field=search mode=sed ""s/\( match/match/g""
+| rex field=search mode=sed ""s/NOT \(\)/match($newkey$, \""null\"")/g"" | return $search",
+"apply_data_host_blacklists",,trackme,"search NOT [ | inputlookup trackme_data_host_monitoring_blacklist_host | `detect_rex(data_host)` | where is_rex=""false"" | table data_host ]
+| where NOT [ `apply_blacklist_rex(trackme_data_host_monitoring_blacklist_host, data_host)` ]
+| where NOT [ `apply_blacklist_rex(trackme_data_host_monitoring_blacklist_index, data_index)` ]",
+"apply_data_host_blacklists_data_retrieve",,trackme,"[ | inputlookup trackme_data_host_monitoring_blacklist_index
+| stats values(data_index) as index | mvexpand index
+| `detect_rex(index)` | where is_rex=""false"" | fields - is_rex | where NOT match(index, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(index=*)"", ""NOT "" . search) ]
+
+[ | inputlookup trackme_data_host_monitoring_blacklist_sourcetype
+| stats values(data_sourcetype) as sourcetype | mvexpand sourcetype
+| `detect_rex(sourcetype)` | where is_rex=""false"" | fields - is_rex | where NOT match(sourcetype, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(sourcetype=*)"", ""NOT "" . search) ]
+
+[ | inputlookup trackme_data_host_monitoring_blacklist_host
+| stats values(data_host) as host | mvexpand host
+| `detect_rex(host)` | where is_rex=""false"" | fields - is_rex | where NOT match(host, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(host=*)"", ""NOT "" . search) ]",
+"apply_data_host_blacklists_summary_data_retrieve",,trackme,"[ | inputlookup trackme_data_host_monitoring_blacklist_index
+| stats values(data_index) as summary_idx | mvexpand summary_idx
+| `detect_rex(summary_idx)` | where is_rex=""false"" | fields - is_rex | where NOT match(summary_idx, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(summary_idx=*)"", ""NOT "" . search) ]
+
+[ | inputlookup trackme_data_host_monitoring_blacklist_sourcetype
+| stats values(data_sourcetype) as summary_st | mvexpand summary_st
+| `detect_rex(summary_st)` | where is_rex=""false"" | fields - is_rex | where NOT match(summary_st, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(summary_st=*)"", ""NOT "" . search) ]",
+"apply_data_host_blacklists_summary_rex",,trackme,"where NOT [ `apply_blacklist_rex(trackme_data_host_monitoring_blacklist_host, data_host, host)` ]
+| where NOT [ `apply_blacklist_rex(trackme_data_host_monitoring_blacklist_sourcetype, data_sourcetype, summary_st)` ]
+| where NOT [ `apply_blacklist_rex(trackme_data_host_monitoring_blacklist_index, data_index, summary_idx)` ]",
+"apply_data_source_blacklists",,trackme,"search NOT [ | inputlookup trackme_data_source_monitoring_blacklist_index | `detect_rex(data_index)` | where is_rex=""false"" | table data_index ] NOT [ | inputlookup trackme_data_source_monitoring_blacklist_sourcetype | `detect_rex(data_sourcetype)` | where is_rex=""false"" | table data_sourcetype ] NOT [ | inputlookup trackme_data_source_monitoring_blacklist_data_name | `detect_rex(data_name)` | where is_rex=""false"" | table data_name ]
+| where NOT [ `apply_blacklist_rex(trackme_data_source_monitoring_blacklist_index, data_index)` ]
+| where NOT [ `apply_blacklist_rex(trackme_data_source_monitoring_blacklist_sourcetype, data_sourcetype)` ]
+| where NOT [ `apply_blacklist_rex(trackme_data_source_monitoring_blacklist_data_name, data_name)` ]
+| where NOT [ `apply_blacklist_rex(trackme_data_source_monitoring_blacklist_host, data_host)` ]",
+"apply_data_source_blacklists_data_retrieve",,trackme,"[ | inputlookup trackme_data_source_monitoring_blacklist_index
+| stats values(data_index) as index | mvexpand index
+| `detect_rex(index)` | where is_rex=""false"" | fields - is_rex | where NOT match(index, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(index=*)"", ""NOT "" . search) ]
+
+[ | inputlookup trackme_data_source_monitoring_blacklist_sourcetype
+| stats values(data_sourcetype) as sourcetype | mvexpand sourcetype
+| `detect_rex(sourcetype)` | where is_rex=""false"" | fields - is_rex | where NOT match(sourcetype, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(sourcetype=*)"", ""NOT "" . search) ]
+
+[ | inputlookup trackme_data_source_monitoring_blacklist_host
+| stats values(data_host) as host | mvexpand host
+| `detect_rex(host)` | where is_rex=""false"" | fields - is_rex | where NOT match(host, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(host=*)"", ""NOT "" . search) ]",
+"apply_metric_host_blacklists",,trackme,"search NOT [ | inputlookup trackme_metric_host_monitoring_blacklist_host | `detect_rex(metric_host)` | where is_rex=""false"" | table metric_host ] NOT [ | inputlookup trackme_metric_host_monitoring_blacklist_index | `detect_rex(metric_index)` | where is_rex=""false"" | table metric_index ]
+| where NOT [ `apply_blacklist_rex(trackme_metric_host_monitoring_blacklist_host, metric_host)` ]
+| where NOT [ `apply_blacklist_rex(trackme_metric_host_monitoring_blacklist_index, metric_index)` ]",
+"apply_metric_host_blacklists_data_retrieve",,trackme,"[ | inputlookup trackme_metric_host_monitoring_blacklist_index
+| stats values(metric_index) as metric_index | mvexpand metric_index
+| `detect_rex(index)` | where is_rex=""false"" | fields - is_rex | where NOT match(index, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(index=*)"", ""NOT "" . search) ]
+
+[ | inputlookup trackme_metric_host_monitoring_blacklist_host
+| stats values(metric_host) as host | mvexpand host
+| `detect_rex(host)` | where is_rex=""false"" | fields - is_rex | where NOT match(host, ""^\*$"") | format | eval search=if(match(search, ""NOT \(\)""), ""(host=*)"", ""NOT "" . search) ]",
+"apply_metric_host_blacklists_detail_metric_category",,trackme,"search NOT [ | inputlookup trackme_metric_host_monitoring_blacklist_metric_category | table metric_category ] NOT [ | inputlookup trackme_metric_host_monitoring_blacklist_metric_category | table metric_category | rename metric_category as detail_metric_category ]",
+"apply_metric_host_blacklists_metric_category",,trackme,"search NOT [ | inputlookup trackme_metric_host_monitoring_blacklist_metric_category | table metric_category ]",
+"comment(1)",text,trackme,"""""",
+"Day_AllDays_8h-20h",,trackme,"eval local_time=strftime(_time, ""%H:%M""), date_wday=lower(strftime(_time, ""%A"")) | search (local_time>=""08:00"" AND local_time<=""20:00"") | fields - local_time, date_wday",
+"Day_BusinessDays_8h-20h",,trackme,"eval local_time=strftime(_time, ""%H:%M""), date_wday=lower(strftime(_time, ""%A"")) | search (local_time>=""08:00"" AND local_time<=""20:00"") AND (date_wday!=""sunday"" date_wday!=""saturday"") | fields - local_time, date_wday",
+"Day_WeekEnd_8h-20h",,trackme,"eval local_time=strftime(_time, ""%H:%M""), date_wday=lower(strftime(_time, ""%A"")) | search (local_time>=""08:00"" AND local_time<=""20:00"") AND (date_wday=""sunday"" OR date_wday=""saturday"") | fields - local_time, date_wday",
+"detect_rex(1)",key,trackme,"eval is_rex=if(match($key$, ""[\\\|\?|\$|\^|\[|\]|\{|\}|\+]""), ""true"", ""false"")
+| eval is_rex=if(match($key$, ""\.\*""), ""true"", is_rex)",
+"Night_AllDays_20h-8h",,trackme,"eval local_time=strftime(_time, ""%H:%M""), date_wday=lower(strftime(_time, ""%A"")) | search (local_time>=""20:00"" AND local_time<=""23:59"") OR (local_time>=""00:00"" AND local_time<=""08:00"") | fields - local_time, date_wday",
+"Night_BusinessDays_20h-8h",,trackme,"eval local_time=strftime(_time, ""%H:%M""), date_wday=lower(strftime(_time, ""%A"")) | search (local_time>=""20:00"" AND local_time<=""23:59"") OR (local_time>=""00:00"" AND local_time<=""08:00"") AND (date_wday!=""sunday"" date_wday!=""saturday"") | fields - local_time, date_wday",
+"Night_WeekEnd_20h-8h",,trackme,"eval local_time=strftime(_time, ""%H:%M""), date_wday=lower(strftime(_time, ""%A"")) | search (local_time>=""20:00"" AND local_time<=""23:59"") OR (local_time>=""00:00"" AND local_time<=""08:00"") AND (date_wday=""sunday"" OR date_wday=""saturday"") | fields - local_time, date_wday",
+"trackme_ack_add(3)","object, object_category, ack_duration",trackme,"makeresults
+| eval object=""$object$"", object_category=""$object_category$""
+| rename _time as ack_mtime
+| eval ack_expiration=now()+($ack_duration$), ack_state=""active""
+| fields object, object_category, ack_mtime, ack_expiration, ack_state
+| append [ | inputlookup trackme_alerts_ack | where NOT (object=""$object$"" AND object_category=""$object_category$"") ]
+| outputlookup trackme_alerts_ack",
+"trackme_ack_default_duration",,trackme,86400,
+"trackme_ack_disable(1)",keyid,trackme,"inputlookup trackme_alerts_ack | eval keyid=_key
+| eval ack_state=if(keyid=""$keyid$"", ""inactive"", ack_state)
+| eval ack_expiration=if(ack_state=""inactive"", ""N/A"", ack_expiration), ack_mtime=if(ack_state=""inactive"", ""N/A"", ack_mtime) | fields keyid, *
+| outputlookup append=t trackme_alerts_ack key_field=keyid",
+"trackme_ack_get(2)","object, object_category",trackme,"makeresults
+| eval object=""$object$"", object_category=""$object_category$""
+| lookup trackme_alerts_ack object object_category OUTPUT | rename _key as keyid
+| table keyid, object, object_category, ack_mtime, ack_expiration, ack_state | fields - _time
+| eval ack_state=if(isnull(ack_state), ""inactive"", ack_state)
+| eval ack_mtime=if(ack_state=""active"", strftime(ack_mtime, ""%c""), ""N/A""), ack_expiration=if(ack_state=""active"", strftime(ack_expiration, ""%c""), ""N/A"")",
+"trackme_ack_join_comment(2)","object, object_category",trackme,"appendcols [ | inputlookup trackme_audit_changes where (object_category=""$object_category$"" AND object=""$object$"") | sort limit=0 - time | head 1 | fields comment ]
+| fields keyid, object, object_category, ack_mtime, ack_expiration, ack_state, comment | eval comment=if(isnull(comment) OR ack_state!=""active"", ""N/A"", comment)",
+"trackme_ack_lookup(2)","object, object_category",trackme,"eval object_category=""$object_category$"" | lookup trackme_alerts_ack object as $object$ object_category | eval ack_state=if(isnull(ack_state), ""inactive"", ack_state) | where ack_state!=""active"" | fields - ack_*",
+"trackme_ack_lookup_main(1)",object,trackme,"lookup trackme_alerts_ack object as $object$ object_category | eval ack_state=if(isnull(ack_state), ""inactive"", ack_state)
+| eval state = if(ack_state=""active"", ""icon|"" + ""ico_ack ico_small|icon-visible|Acknowledged: "" . status_message, state)",
+"trackme_ack_populate_dropdown",,trackme,"makeresults
+| eval choice1=`trackme_ack_default_duration` . ""|"" . ""default"" . ""|"" . 1, choice2=2*24*60*60 . ""|"" . ""default"" . ""|"" . 2, choice3=7*24*60*60 . ""|"" . ""default"" . ""|"" . 3, choice4=15*24*60*60 . ""|"" . ""default"" . ""|"" . 4, choice5=30*24*60*60 . ""|"" . ""default"" . ""|"" . 5
+| fields - _time
+| transpose | stats list(""row 1"") as choices
+| mvexpand choices
+| rex field=choices ""(?<duration>[^\|]+)\|(?<label>[^\|]+)\|(?<priority>\d)""
+| fields duration, label, priority
+| eval label=tostring(duration, ""duration"")
+| sort priority | fields duration, label",
+"trackme_alerts_order_data_host",,trackme,"eval object=coalesce(data_name, data_host, metric_host) | fields data_host, data_index, sourcetype_summary, data_host_state, data_monitored_state, status_message, *",
+"trackme_alerts_order_data_source",,trackme,"eval object=coalesce(data_name, data_host, metric_host) | fields data_name, data_index, data_sourcetype, data_source_state, data_monitored_state, status_message, *",
+"trackme_alerts_order_metric_host",,trackme,"eval object=coalesce(data_name, data_host, metric_host) | fields metric_host, metric_index, metric_host_state, metric_monitored_state, status_message, *",
+"trackme_alerts_priority",,trackme,"priority=""high""",
+"trackme_audit_changes_retention",,trackme,"where _time>relative_time(now(), ""-90d"")",
+"trackme_auto_disablement_period",,trackme,"relative_time(now(), ""-45d"")",
+"trackme_collect_flip(1)",collection,trackme,"inputlookup append=t $collection$ | where isnotnull(object)
+| fields time, object, object_category, result, object_previous_state, object_state, priority | eval _time=time
+| `trackme_sumarycollect(""flip_state_change_tracking"")`
+| where noop=""true""
+| outputlookup $collection$",
+"trackme_collect_state(2)","source,object",trackme,"eval current_state=case(
+isnotnull(data_name), data_source_state,
+isnotnull(data_host), data_host_state,
+isnotnull(metric_host), metric_host_state
+)
+| eval _time=now(), object=$object$ | addinfo | collect `trackme_idx` source=""$source$"" marker=""tracking_type=$object$""",
+"trackme_data_host_extract_mvstsummary",,trackme,"rex field=""data_host_st_summary"" ""^idx=(?<summary_idx>[^\|]*)\|st=(?<summary_st>[^\|]*)\|max_allowed=(?<summary_max_allowed>[^\|]*)\|last_ingest=(?<summary_last_ingest>[^\|]*)\|first_time=(?<summary_first_time>[^\|]*)\|last_time=(?<summary_last_time>[^\|]*)\|last_ingest_lag=(?<summary_last_ingest_lag>[^\|]*)\|last_event_lag=(?<summary_last_event_lag>[^\|]*)\|time_measure=(?<time>[^\|]*)\|state=(?<summary_state>[^\|]*)""
+| `trackme_extended_date_format(summary_last_time)`
+| eval sourcetype_summary=mvzip(summary_idx, summary_st, ""|st="")
+| eval sourcetype_summary=mvzip(sourcetype_summary, summary_max_allowed, ""|max_allowed="")
+| eval sourcetype_summary=mvzip(sourcetype_summary, summary_last_time, ""|last_time="")
+| eval sourcetype_summary=mvzip(sourcetype_summary, summary_last_event_lag, ""|last_event_lag="")
+| eval sourcetype_summary=mvzip(sourcetype_summary, summary_last_ingest_lag, ""|last_ingest_lag="")
+| eval sourcetype_summary=mvzip(sourcetype_summary, summary_state, ""|state="")
+| fields - summary_st summary_last_time summary_last_event_lag summary_last_ingest_lag summary_max_allowed summary_state
+| rex field=sourcetype_summary mode=sed ""s/state=green/✔️/g""
+| rex field=sourcetype_summary mode=sed ""s/state=red/⭕/g""",
+"trackme_data_host_group_lookup",,trackme,"eval object_category=""data_host"" | lookup trackme_logical_group object_group_members as data_host OUTPUTNEW _key as object_group_key, object_group_name, object_group_min_green_percent
+| eventstats count as object_group_members_count, min(data_last_lag_seen) as object_group_last_lag_seen, count(eval(data_host_state=""red"")) as object_group_members_red by object_group_key, object_group_name
+| eval object_group_green_percent=100-(object_group_members_red/object_group_members_count*100)
+| eval data_host_state=if(isnotnull(object_group_key) AND isnotnull(object_group_name) AND data_host_state!=""green"" AND object_group_green_percent>=object_group_min_green_percent, ""blue"", data_host_state)
+| eval object_group_state=if(isnotnull(object_group_key) AND isnotnull(object_group_name) AND object_group_green_percent>=object_group_min_green_percent, ""green"", ""red"")",
+"trackme_data_host_rule_filter(1)",key,trackme,"where match($key$, ""[\w|\-|\.]"") AND len($key$)<100",
+"trackme_data_host_tracker_abstract",,trackme,"eval host=upper(host)
+
+`comment(""#### build the st summary ####"")`
+| eval data_host_st_summary = ""idx="" . index . ""|"" . ""st="" . sourcetype . ""|"" . ""last_ingest="" . data_last_ingest . ""|"" . ""first_time="" . data_first_time_seen . ""|"" . ""last_time="" . data_last_time_seen . ""|"" . ""last_ingest_lag="" . data_last_ingestion_lag_seen . ""|"" . ""last_event_lag="" . (now()-data_last_time_seen) . ""|"" . ""time_measure="" . now()
+
+`comment(""#### host level calculations before loading the collection content"")`
+| eventstats sum(data_eventcount) as data_eventcount, max(data_custom_max_lag_allowed_per_index) as data_custom_max_lag_allowed_per_index, max(data_custom_max_lag_allowed_per_sourcetype) as data_custom_max_lag_allowed_per_sourcetype by host
+
+| inputlookup append=t trackme_host_monitoring
+| eval host=if(isnull(host), data_host, host)
+| eval sourcetype=if(isnull(sourcetype), data_sourcetype, sourcetype)
+| eval index=if(isnull(index), data_index, index)
+
+| makemv delim="","" data_host_st_summary | mvexpand data_host_st_summary
+| rex field=""data_host_st_summary"" ""^idx=(?<summary_idx>[^\|]*)\|st=(?<summary_st>[^\|]*)\|last_ingest=(?<summary_last_ingest>[^\|]*)\|first_time=(?<summary_first_time>[^\|]*)\|last_time=(?<summary_last_time>[^\|]*)\|last_ingest_lag=(?<summary_last_ingest_lag>[^\|]*)\|last_event_lag=(?<summary_last_event_lag>[^\|]*)\|time_measure=(?<time>[^\|]*)""
+| rex field=""data_host_st_summary"" ""^idx=(?<summary_idx>[^\|]*)\|st=(?<summary_st>[^\|]*)\|max_allowed=[^\|]*\|last_ingest=(?<summary_last_ingest>[^\|]*)\|first_time=(?<summary_first_time>[^\|]*)\|last_time=(?<summary_last_time>[^\|]*)\|last_ingest_lag=(?<summary_last_ingest_lag>[^\|]*)\|last_event_lag=(?<summary_last_event_lag>[^\|]*)\|time_measure=(?<time>[^\|]*)""
+
+`comment(""#### Apply blocklists ####"")`
+| search `apply_data_host_blacklists_summary_data_retrieve`
+| `apply_data_host_blacklists_summary_rex`
+
+`comment(""#### lagging policies per index and sourcetype ####"")`
+
+`comment("" match if object=all"")`
+| eval lagging_class_object=""all"" | lookup trackme_custom_lagging_definition name as summary_idx, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed_per_index, level as data_custom_max_lag_allowed_per_index_level, object as data_custom_max_lag_allowed_per_index_object
+`comment("" match if object=data_host"")`
+| eval lagging_class_object=""data_host"" | lookup trackme_custom_lagging_definition name as summary_idx, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed_per_index, level as data_custom_max_lag_allowed_per_index_level, object as data_custom_max_lag_allowed_per_index_object
+
+`comment("" match if object=all"")`
+| eval lagging_class_object=""all"" | lookup trackme_custom_lagging_definition name as summary_st, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed_per_sourcetype, level as data_custom_max_lag_allowed_per_sourcetype_level, object as data_custom_max_lag_allowed_per_sourcetype_object
+`comment("" match if object=data_host"")`
+| eval lagging_class_object=""data_host"" | lookup trackme_custom_lagging_definition name as summary_st, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed_per_sourcetype, level as data_custom_max_lag_allowed_per_sourcetype_level, object as data_custom_max_lag_allowed_per_sourcetype_object
+
+| eval data_custom_max_lag_allowed_per_index=if(data_custom_max_lag_allowed_per_index_level!=""index"", null(), data_custom_max_lag_allowed_per_index), data_custom_max_lag_allowed_per_sourcetype=if(data_custom_max_lag_allowed_per_sourcetype_level!=""sourcetype"", null(), data_custom_max_lag_allowed_per_sourcetype)
+| eval data_custom_max_lag_allowed_per_index=if(isnull(data_custom_max_lag_allowed_per_index_object) OR data_custom_max_lag_allowed_per_index_object=""all"" OR data_custom_max_lag_allowed_per_index_object=""data_host"", data_custom_max_lag_allowed_per_index, null())
+| eval data_custom_max_lag_allowed_per_sourcetype=if(isnull(data_custom_max_lag_allowed_per_sourcetype_object) OR data_custom_max_lag_allowed_per_sourcetype_object=""all"" OR data_custom_max_lag_allowed_per_sourcetype_object=""data_host"", data_custom_max_lag_allowed_per_sourcetype, null())
+| fields - data_custom_max_lag_allowed_per_index_level, data_custom_max_lag_allowed_per_sourcetype_level, data_custom_max_lag_allowed_per_index_object, data_custom_max_lag_allowed_per_sourcetype_object
+
+`comment(""#### for any match within the lagging policy, the highest lagging value has the precedence ####"")`
+| fillnull value=0 data_custom_max_lag_allowed_per_index, data_custom_max_lag_allowed_per_sourcetype
+| eval data_custom_max_lag_allowed=max(data_custom_max_lag_allowed_per_index, data_custom_max_lag_allowed_per_sourcetype)
+
+`comment(""#### before applying the precedence, save the summary max lag per sourcetype"")`
+| eventstats first(data_max_lag_allowed) as lookup_data_max_lag_allowed, first(data_override_lagging_class) as data_override_lagging_class by host
+| `trackme_default_host_lag`
+| eval data_max_lag_allowed=if(isnum(lookup_data_max_lag_allowed) AND lookup_data_max_lag_allowed!=data_max_lag_allowed AND data_override_lagging_class=""true"", lookup_data_max_lag_allowed, data_max_lag_allowed) | fields - lookup_data_max_lag_allowed
+| eval summary_max_allowed=if(isnum(data_custom_max_lag_allowed) AND data_custom_max_lag_allowed>0, data_custom_max_lag_allowed, data_max_lag_allowed)
+| fields - data_custom_max_lag_allowed_per_index, data_custom_max_lag_allowed_per_sourcetype
+
+`comment(""#### before stats, build the latest summary ####"")`
+| eval _time=time
+| eventstats latest(summary_last_ingest) as ""summary_last_ingest"", min(summary_first_time) as ""summary_first_time"", max(summary_last_time) as ""summary_last_time"", latest(summary_last_ingest_lag) as ""summary_last_ingest_lag"", latest(summary_last_event_lag) as ""summary_last_event_lag"", latest(summary_max_allowed) as ""summary_max_allowed"" by host, summary_idx, summary_st
+| eventstats first(data_lag_alert_kpis) as data_lag_alert_kpis by host
+
+`comment(""#### define the status per sourcetype for the source summary mvfield ####"")`
+| `trackme_default_alert_over_kpis`
+| eval summary_st_state=case( data_lag_alert_kpis=""all_kpis"", if(summary_last_event_lag>summary_max_allowed OR summary_last_ingest_lag>summary_max_allowed, ""red"", ""green""), data_lag_alert_kpis=""lag_ingestion_kpi"", if(summary_last_ingest_lag>summary_max_allowed, ""red"", ""green""), data_lag_alert_kpis=""lag_event_kpi"", if(summary_last_event_lag>summary_max_allowed, ""red"", ""green"") )
+| eval data_host_st_summary = ""idx="" . summary_idx . ""|"" . ""st="" . summary_st . ""|"" . ""max_allowed="" . summary_max_allowed . ""|"" . ""last_ingest="" . summary_last_ingest . ""|"" . ""first_time="" . summary_first_time . ""|"" . ""last_time="" . summary_last_time . ""|"" . ""last_ingest_lag="" . summary_last_ingest_lag . ""|"" . ""last_event_lag="" . (now()-summary_last_time) . ""|"" . ""time_measure="" . now() . ""|"" . ""state="" . summary_st_state
+
+`comment(""#### perform intermediate calculation table ####"")`
+| stats max(summary_last_ingest) as data_last_ingest, min(summary_first_time) as data_first_time_seen,
+max(summary_last_time) as data_last_time_seen, avg(summary_last_ingest_lag) as data_last_ingestion_lag_seen,
+values(summary_idx) as data_index, values(summary_st) as data_sourcetype,
+max(data_custom_max_lag_allowed) as data_custom_max_lag_allowed, max(data_max_lag_allowed) as data_max_lag_allowed, max(summary_max_allowed) as summary_max_allowed, values(data_host_st_summary) as data_host_st_summary, 
+first(OutlierAlertOnUpper) as OutlierAlertOnUpper, first(OutlierLowerThresholdMultiplier) as OutlierLowerThresholdMultiplier, first(OutlierMinEventCount) as OutlierMinEventCount, first(OutlierSpan) as OutlierSpan, 
+first(OutlierTimePeriod) as OutlierTimePeriod, first(OutlierUpperThresholdMultiplier) as OutlierUpperThresholdMultiplier, first(data_eventcount) as data_eventcount, first(data_host_alerting_policy) as data_host_alerting_policy, 
+first(data_host_state) as data_host_state, first(data_lag_alert_kpis) as data_lag_alert_kpis, first(data_last_lag_seen) as data_last_lag_seen, first(data_monitored_state) as data_monitored_state, 
+first(data_monitoring_wdays) as data_monitoring_wdays, first(data_override_lagging_class) as data_override_lagging_class, first(data_previous_host_state) as data_previous_host_state, 
+first(data_previous_tracker_runtime) as data_previous_tracker_runtime, first(data_tracker_runtime) as data_tracker_runtime, first(enable_behaviour_analytic) as enable_behaviour_analytic, first(isOutlier) as isOutlier, 
+first(latest_flip_state) as latest_flip_state, first(latest_flip_time) as latest_flip_time, first(object_category) as object_category, first(priority) as priority by host
+| eval data_last_ingestion_lag_seen=round(data_last_ingestion_lag_seen, 0)
+
+`comment(""#### define the ingestion lag versus now, and a flag field defining an online status any results from live tstats ####"")`
+| eval data_last_lag_seen=now()-data_last_time_seen, data_host_is_online=""true""
+
+`comment(""#### rename host and upper case ####"")`
+| rename host as data_host | eval data_host=upper(data_host)
+
+`comment(""#### manage previous values ####"")`
+| rename data_host_state as data_previous_host_state, data_tracker_runtime as data_previous_tracker_runtime
+
+`comment(""#### exclude any permanent deletion stored in the trackme_audit_change lookup ####"")`
+| search NOT [ | inputlookup trackme_audit_changes | where action=""success"" AND change_type=""delete permanent"" | eval _time=time/1000 | where _time>relative_time(now(), ""-7d"") | table object | dedup object | sort limit=0 object | rename object as data_host ]
+
+`comment(""#### if the key is null, this is the first time we see this source and it will be added to the collection, create a key ####"")`
+| eval key=if(isnull(key), md5(data_host), key)
+
+`comment(""#### apply various macro defining default values and policies ####"")`
+| `trackme_default_host_monitored_state`
+| `trackme_default_host_lag`
+| `trackme_default_alert_over_kpis`
+| `trackme_default_host_monitored_wdays`
+| `trackme_default_priority`
+
+`comment(""#### support for priority based lagging classes ####"")`
+
+`comment("" match if object=all"")`
+| eval lagging_class_object=""all"" | lookup trackme_custom_lagging_definition name as priority, object as lagging_class_object OUTPUT value as data_custom_max_lag_allowed, level as lagging_class_level, object as lagging_class_object | eval data_custom_max_lag_allowed=if(lagging_class_level!=""priority"" AND isnotnull(data_custom_max_lag_allowed), null(), data_custom_max_lag_allowed) | eval data_custom_max_lag_allowed=if(isnull(lagging_class_object) OR lagging_class_object=""all"" OR lagging_class_object=""data_host"", data_custom_max_lag_allowed, null()) | fields - lagging_class_level, lagging_class_object
+`comment("" match if object=data_host"")`
+| eval lagging_class_object=""data_host"" | lookup trackme_custom_lagging_definition name as priority, object as lagging_class_object OUTPUT value as data_custom_max_lag_allowed, level as lagging_class_level, object as lagging_class_object | eval data_custom_max_lag_allowed=if(lagging_class_level!=""priority"" AND isnotnull(data_custom_max_lag_allowed), null(), data_custom_max_lag_allowed) | eval data_custom_max_lag_allowed=if(isnull(lagging_class_object) OR lagging_class_object=""all"" OR lagging_class_object=""data_host"", data_custom_max_lag_allowed, null()) | fields - lagging_class_level, lagging_class_object
+
+`comment(""#### if data_override_lagging_class is defined ####"")`
+| eval data_override_lagging_class=if(isnull(data_override_lagging_class) OR data_override_lagging_class=""null"", ""false"", data_override_lagging_class)
+
+`comment(""#### additional conditional operations on data_max_lag_allowed depending on policies ####"")`
+| eval data_max_lag_allowed=if(isnum(data_custom_max_lag_allowed) AND data_override_lagging_class!=""true"", data_custom_max_lag_allowed, data_max_lag_allowed)
+| eval data_max_lag_allowed=if(data_override_lagging_class!=""true"", max(data_max_lag_allowed, data_custom_max_lag_allowed, summary_max_allowed), data_max_lag_allowed)
+
+`comment(""#### create a comma separated list of known indexes and sourcetype for live/lookup merge in next phase ####"")`
+| eval data_index=mvjoin(data_index, "",""), data_sourcetype=mvjoin(data_sourcetype, "","")
+
+`comment(""#### define the object_category field which is used by further lookup operations ####"")`
+| eval object_category=""data_host""
+
+`comment(""#### retrieve summary investigator analytic ####"")`
+| inputlookup append=t trackme_summary_investigator_volume_outliers
+| eval data_host=if(isnull(data_host) AND object_category=""data_host"", object, data_host)
+| where isnotnull(data_host)
+| stats values(data_host_st_summary) as data_host_st_summary,
+first(OutlierAlertOnUpper) as OutlierAlertOnUpper,
+first(OutlierLowerThresholdMultiplier) as OutlierLowerThresholdMultiplier,
+first(OutlierMinEventCount) as OutlierMinEventCount,
+first(OutlierSpan) as OutlierSpan,
+first(OutlierTimePeriod) as OutlierTimePeriod,
+first(OutlierUpperThresholdMultiplier) as OutlierUpperThresholdMultiplier,
+first(data_eventcount) as data_eventcount,
+first(data_first_time_seen) as data_first_time_seen,
+first(data_host_alerting_policy) as data_host_alerting_policy,
+first(data_host_is_online) as data_host_is_online,
+first(data_index) as data_index,
+first(data_lag_alert_kpis) as data_lag_alert_kpis,
+first(data_last_ingest) as data_last_ingest,
+first(data_last_ingestion_lag_seen) as data_last_ingestion_lag_seen,
+first(data_last_lag_seen) as data_last_lag_seen,
+first(data_last_time_seen) as data_last_time_seen,
+first(data_max_lag_allowed) as data_max_lag_allowed,
+first(data_monitored_state) as data_monitored_state,
+first(data_monitoring_wdays) as data_monitoring_wdays,
+first(data_override_lagging_class) as data_override_lagging_class,
+first(data_previous_host_state) as data_previous_host_state,
+first(data_previous_tracker_runtime) as data_previous_tracker_runtime,
+first(data_sourcetype) as data_sourcetype,
+first(enable_behaviour_analytic) as enable_behaviour_analytic,
+first(isOutlier) as isOutlier,
+first(key) as key,
+first(latest_flip_state) as latest_flip_state,
+first(latest_flip_time) as latest_flip_time,
+first(object_category) as object_category,
+first(priority) as priority,
+first(summary_max_allowed) as summary_max_allowed by data_host
+| where isnotnull(key)
+
+`comment(""#### fillnull for OutlierMinEventCount, isOutlier ####"")`
+| fillnull value=0 OutlierMinEventCount
+| fillnull value=0 isOutlier
+
+`comment(""#### OutlierMinEventCount needs to be equal to 0 if set to non numerical value ####"")`
+| eval OutlierMinEventCount=if(isnum(OutlierMinEventCount), OutlierMinEventCount, 0)
+
+`comment(""#### Define the default outlier threshold multiplier ####"")`
+| eval OutlierLowerThresholdMultiplier=if(isnum(OutlierLowerThresholdMultiplier), OutlierLowerThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+| eval OutlierUpperThresholdMultiplier=if(isnum(OutlierUpperThresholdMultiplier), OutlierUpperThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+
+`comment(""#### Define the behaviour for alerting on upper bound ####"")`
+| eval OutlierAlertOnUpper=if(isnotnull(OutlierAlertOnUpper), OutlierAlertOnUpper, `trackme_default_outlier_alert_on_upper`)
+
+`comment(""#### Define the default period for Outliers calculations ####"")`
+| eval OutlierTimePeriod=if(isnotnull(OutlierTimePeriod), OutlierTimePeriod, `trackme_default_outlier_period`)
+
+`comment(""#### Define the default value for Outliers span ####"")`
+| eval OutlierSpan=if(isnotnull(OutlierSpan), OutlierSpan, ""5m"")
+
+`comment(""#### define a status for enable_behaviour_analytic ####"")`
+| eval enable_behaviour_analytic=if(isnull(enable_behaviour_analytic) OR enable_behaviour_analytic="""", `trackme_default_enable_behaviour_analytic`, enable_behaviour_analytic)
+
+`comment(""#### define isOutlier status ####"")`
+| `trackme_isOutlier_status`
+
+`comment(""#### define state ####"")`
+| `trackme_eval_data_host_state`
+
+`comment(""#### source group feature ####"")`
+| `trackme_data_host_group_lookup`
+
+`comment(""#### define data_tracker_runtime ####"")`
+| eval data_tracker_runtime=now()
+
+`comment(""#### conditional verifications ####"")`
+| eval data_previous_host_state=if(isnull(data_previous_host_state), ""discovered"", data_previous_host_state)
+| eval data_previous_tracker_runtime=if(isnull(data_previous_tracker_runtime), now(), data_previous_tracker_runtime)
+| eval latest_flip_state=if(isnull(latest_flip_state), data_previous_host_state, latest_flip_state)
+| eval latest_flip_time=if(isnull(latest_flip_time), data_previous_tracker_runtime, latest_flip_time)
+
+| where isnotnull(data_last_time_seen)
+| eval data_last_lag_seen=if(data_host_is_online=""true"", data_last_lag_seen, now()-data_last_time_seen)
+
+`comment(""#### apply host filtering ####"")`
+| `trackme_data_host_rule_filter(data_host)`
+
+`comment(""#### auto disable monitoring status based on policies ####"")`
+| eval data_monitored_state=if(data_last_time_seen<=`trackme_auto_disablement_period`, ""disabled"", data_monitored_state)
+
+`comment(""#### form the data host sourcetype summary ####"")`
+| eval data_host_st_summary=mvjoin(data_host_st_summary, "","")",
+"trackme_data_quality_parse",,trackme,"rex ""Context:\s*source=(?<data_source>[^\|]*)\|host=(?<data_host>[^\|]*)\|(?<data_sourcetype>[^\|]*)\|""",
+"trackme_data_sampling_abstract_detect_events_format",,trackme,"eval custom_detected_format = [ | `trackme_data_sampling_custom_models_genspl`  | return $spl ]
+| `trackme_data_sampling_detect_event_format(builtin_detected_format)`
+| eval current_detected_format=if(isnotnull(custom_detected_format) AND custom_detected_format!="""", custom_detected_format, builtin_detected_format)
+| eval current_detected_format_id=md5(current_detected_format)
+| fields - custom_*, builtin_*",
+"trackme_data_sampling_algo_entities_to_process",,trackme,"search index=_internal sourcetype=scheduler earliest=-4h latest=now status=success trackme app=""trackme"" savedsearch_name=""TrackMe - Data sampling and format detection tracker""
+| stats avg(run_time) AS avg_run_time, max(run_time) AS max_run_time, latest(run_time) AS latest_run_time, avg(result_count) as avg_processed_no_entities by savedsearch_name
+| foreach avg_run_time max_run_time latest_run_time
+    [ eval <<FIELD>> = round('<<FIELD>>', 2) ]
+| appendcols
+    [| inputlookup trackme_data_source_monitoring where data_monitored_state=""enabled""
+    | where data_last_time_seen>relative_time(now(), ""-24h"")
+    | stats count as total_entities ]
+| eval potential_rate_sec=round(avg_run_time/avg_processed_no_entities, 2)
+| eval max_accepted_run_time_sec=120
+| eval max_entities_to_process=round(max_accepted_run_time_sec/potential_rate_sec, 0)
+| table max_entities_to_process
+| append
+    [| makeresults
+    | eval max_entities_to_process=100
+    | fields - _time ]
+| head 1
+| eval max_entities_to_process=if(isnum(max_entities_to_process) AND max_entities_to_process>0, max_entities_to_process, 100)
+| return $max_entities_to_process",
+"trackme_data_sampling_correlate_format_change(2)","previous_model_name,current_model_name",trackme,"eval [ | inputlookup trackme_data_sampling_custom_models where model_name=""$previous_model_name$"" | fields model_regex | eval model_regex=""match(_raw, \"""" . model_regex . ""\"")""
+| append [ | `trackme_show_builtin_model_rules` | where model_name=""$previous_model_name$"" | fields model_regex ]
+| head 1
+| eval model_name=""$previous_model_name$""
+| rename model_name as previous_model_name, model_regex as previous_model_regex
+
+| appendcols [ | inputlookup trackme_data_sampling_custom_models where model_name=""$current_model_name$"" | fields model_regex | eval model_regex=""match(_raw, \"""" . model_regex . ""\"")""
+| append [ | `trackme_show_builtin_model_rules` | where model_name=""$current_model_name$"" | fields model_regex ]
+| head 1
+| eval model_name=""$current_model_name$""
+| rename model_name as current_model_name, model_regex as current_model_regex ]
+
+| eval spl = ""model_match = case("" . previous_model_regex . "", \"""" . previous_model_name . ""\"", "" . current_model_regex . "", \"""" . current_model_name . ""\"")""
+| fields spl | rex field=spl mode=sed ""s/match\(raw_sample/match(_raw/g""
+| return $spl ]
+
+| top model_match | eval summary = ""model: [ "" . model_match . "" ], count: [ "" . count . "" ], percent: [ "" . round(percent, 2) . "" % ]""
+| stats values(summary) as summary
+| eval summary=mvjoin(summary, "", "")",
+"trackme_data_sampling_custom_models_genspl",,trackme,"makeresults | eval spl = ""case("" | fields - _time
+| append [ | inputlookup trackme_data_sampling_custom_models | eval order_range=if(model_type=""exclusive"", 0, 1) | sort 0 order_range | rex field=model_regex mode=sed ""s/\""/\\\""/g""
+| eval spl = if(sourcetype_scope == ""ANY"" OR isnull(sourcetype_scope) OR sourcetype_scope == """" OR sourcetype_scope == ""*"", ""match(raw_sample,\"""" . model_regex . ""\""), \"""" . model_name . ""\"""", ""in(data_sourcetype, \"""" . mvjoin(split(sourcetype_scope, "",""), ""\"",\"""") . ""\"") AND match(raw_sample,\"""" . model_regex . ""\""), \"""" . model_name . ""\"""")
+| streamstats count as record_id
+| eventstats max(record_id) as total_records
+| eval spl = if(record_id!=total_records, spl . "","", spl) ]
+| append [ | makeresults | eval spl = "")"" | fields - _time ]
+| stats list(spl) as spl | nomv spl | eval spl=if(spl == ""case( )"", ""noop"", spl)",
+"trackme_data_sampling_custom_models_simulate_genlist(1)",list,trackme,"[ | makeresults | eval spl=""\"""" . mvjoin(split(""$list$"", "",""), ""\"",\"""") . ""\"""" | return $spl ]",
+"trackme_data_sampling_default_sample_record_at_discovery",,trackme,100,
+"trackme_data_sampling_default_sample_record_at_run",,trackme,50,
+"trackme_data_sampling_detect_event_format(1)","dest_field",trackme,"eval $dest_field$=case(
+match(raw_sample, ""^\{""), ""json"",
+match(raw_sample, ""^\<\d*\>\w{3}\s*\d{1,2}\s*\d{1,2}:\d{1,2}:\d{1,2}\s""), ""syslog_rfc3164"",
+match(raw_sample, ""^\<\d*\>\d*\s*\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.""), ""syslog_rfc5424"",
+match(raw_sample, ""^\[\w*]\s*\d{4}-\d{1,2}-\d{1,2}\s*\d{1,2}:\d{1,2}:\d{1,2}\,\d{1,3}""), ""log4j"",
+match(raw_sample, ""^\<[^\s]*\sxmlns=""), ""xml"",
+match(raw_sample, ""^type=[^\s]*\s*msg=\w*\(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}\.\d{6}\)""), ""auditd"",
+match(raw_sample, ""^[^\:]*:\[timestamp=\d{1,2}-\d{1,2}-\d{4}\s*\d{1,2}\:\d{1,2}\:\d{1,2}\.\d{3}""), ""linux_syslog"",
+match(raw_sample, ""\[\d{2}\/\w{3}\/\d{4}\s*\d{2}:\d{2}:\d{2}:\d+\]""), ""access_log1"",
+match(raw_sample, ""\[\d{2}\/\w{3}\/\d{4}\s*\d{2}:\d{2}:\d{2}\]""), ""access_log2"",
+match(raw_sample, ""^\w*\[\d*\]\:\s*""), ""syslog_no_timestamp"",
+match(raw_sample, ""^\w{3}\s*\d{1,2}\s*\d{1,2}\-\d{1,2}\-\d{1,2}""), ""raw_start_by_timestamp %b %d %H-%M-%S"",
+match(raw_sample, ""^\w{3}\s*\d{1,2}\s*\d{1,2}\:\d{1,2}\:\d{1,2}:\d{3}""), ""raw_start_by_timestamp %b %d %H:%M:%S:%3N"",
+match(raw_sample, ""^\w{3}\s*\d{1,2}\s*\d{1,2}\:\d{1,2}\:\d{1,2}\.\d{3}""), ""raw_start_by_timestamp %b %d %H:%M:%S.%3N"",
+match(raw_sample, ""^\w{3}\s*\d{1,2}\s*\d{1,2}\:\d{1,2}\:\d{1,2}""), ""raw_start_by_timestamp %b %d %H:%M:%S"",
+match(raw_sample, ""^\d{4}\-\d{1,2}\-\d{1,2}\s*\d{1,2}:\d{1,2}:\d{1,2}""), ""raw_start_by_timestamp %Y-%d-%m %H:%M:%S"",
+match(raw_sample, ""^\d{4}\-\d{1,2}\-\d{1,2}\s*\d{1,2}-\d{1,2}-\d{1,2}""), ""raw_start_by_timestamp %Y-%d-%m %H-%M-%S"",
+match(raw_sample, ""^\d{1,2}\-\d{1,2}\-\d{4}\s*\d{1,2}:\d{1,2}:\d{1,2}""), ""raw_start_by_timestamp %m-%d-%Y %H:%M:%S"",
+match(raw_sample, ""^\d{1,2}\/\d{1,2}\/\d{4}\s*\d{1,2}:\d{1,2}:\d{1,2}""), ""raw_start_by_timestamp %m/%d/%Y %H-%M-%S"",
+match(raw_sample, ""^\d*\,\d{1,2}\/\d{1,2}\/\d{2}\,\d{1,2}:\d{1,2}:\d{1,2}""), ""raw_start_by_id_then_timestamp %m/%d/%y,%H:%M:%S"",
+match(raw_sample, ""^\w{3}\s*\w{3}\s*\d{1,2}\s*\d{1,2}:\d{1,2}:\d{1,2}\s*\d{4}""), ""raw_start_by_timestamp %a &b %d %H:%M:%S"",
+match(raw_sample, ""^CEF:\d*\|""), ""CEF_regular"",
+match(raw_sample, ""^[^\s]*\sCEF:\d*\|""), ""CEF_variation1"",
+match(raw_sample, ""^(?i)current\s*time:\s*\d{1,2}-\d{1,2}-\d{4}\s*\d{1,2}:\d{1,2}\d{1,2}""), ""raw_start_by_current_time_then_timestamp %d-%m-%Y %H:%M:%S"",
+match(raw_sample, ""^(?i)(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s*\d{1,2}\s*\w+\s*\d{4}\s*\d{1,2}:\d{1,2}:\d{1,2}""), ""raw_start_by_timestamp %A %d %B %Y %H:%M:%S"",
+match(raw_sample, ""^\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}""), ""raw_start_by_timestamp %Y%m%d%H%M%S"",
+match(raw_sample, ""date=\""\d{4}-\d{1,2}-\d{1,2}\"" time=\""\d{1,2}:\d{1,2}:\d{1,2}\""""), ""raw_start_by date=\""%Y-%m-%d\"" time=\""%H:%M:%S\"""",
+match(raw_sample, ""^\d+\.\d{6}\s*""), ""raw_start_by_timestamp %s.%f"",
+match(raw_sample, ""^\d{4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}:\d{1,2}\s""), ""raw_start_by_timestamp %Y-%m-%dT%H:%M:%S"",
+match(raw_sample, ""^\""\d{4}-\d{1,2}-\d{1,2}\s*\d{2}:\d{2}:\d{2}\""\s""), ""raw_start_by_timestamp \""%Y-%m-%d %H:%M:%S\"""",
+match(raw_sample, ""^\d{2}-\w{3}-\d{4}\s*\d{2}:\d{2}:\d{2}\s""), ""raw_start_by_timestamp %d-%b-%Y %H:%M:%S"",
+match(raw_sample, ""^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}""), ""raw_start_by_timestamp %Y-%m-%dT%H:%M:%S\.%3N"",
+match(raw_sample, ""^start_time=\""\w{3}\s*\w{3}\s*\d{2}\s*\d{2}\:\d{2}\:\d{2}\s*\d{4}\""""), ""raw_start_by start_time=\""%a %b %d %H:%M:%S %Y"",
+match(raw_sample, ""^InsertedAt=\""\d{4}-\d{2}-\d{2}\s*\d{2}:\d{2}:\d{2}\""""), ""raw_start_by InsertedAt=\""%Y-%m-%d %H:%M:%S"",
+match(raw_sample, ""^\d{4}\/\d{2}\/\d{2}\s*\d{2}:\d{2}:\d{2}\s""), ""raw_start_by_timestamp %Y/%m/%d %H:%M:%S"",
+match(raw_sample, ""^\w{3}\s*\d{1,2}\s*\w{3}\s*\d{4}\s*\d{1,2}:\d{1,2}:\d{1,2}\s""), ""raw_start_by_timestamp %a %d %b %Y %H:%M:%S"",
+match(raw_sample, "".*""), ""raw_not_identified""
+)
+| eval $dest_field$_id=md5($dest_field$)",
+"trackme_data_sampling_engine",,trackme,"eval custom_detected_format = [ | `trackme_data_sampling_custom_models_genspl`  | return $spl ]
+| `trackme_data_sampling_detect_event_format(builtin_detected_format)`
+| eval current_detected_format=if(isnotnull(custom_detected_format) AND custom_detected_format!="""", custom_detected_format, builtin_detected_format)
+| eval current_detected_format_id=md5(current_detected_format)
+`comment(""##### Retrieve the custom rule type #####"")`
+| lookup trackme_data_sampling_custom_models model_name as custom_detected_format OUTPUT model_type
+| eval model_type=if(isnull(model_type) OR model_type="""", ""inclusive"", model_type)
+
+`comment(""##### Handle exclusive model matching #####"")`
+| eval exclusive_match_anomaly=if(isnotnull(custom_detected_format) AND model_type=""exclusive"", 1, 0)
+
+| fields - custom_*, builtin_*
+
+`comment(""##### Detect multi-format #####"")`
+| eventstats dc(current_detected_format_id) as current_detected_format_dcount, max(exclusive_match_anomaly) as exclusive_match_anomaly by data_name
+
+`comment(""##### Merge per entity #####"")`
+| stats values(raw_sample) as raw_sample, values(current_detected_format) as current_detected_format, values(current_detected_format_id) as current_detected_format_id, first(current_detected_format_dcount) as current_detected_format_dcount, first(data_sourcetype) as data_sourcetype, first(exclusive_match_anomaly) as exclusive_match_anomaly, first(key) as key, first(model_type) as model_type by data_name
+
+`comment(""##### Lookup the custom rules "")`
+| lookup trackme_data_sampling_custom_models model_id as current_detected_format_id OUTPUT model_id as custom_rule_found
+
+`comment(""##### Define data_sample_mtime #####"")`
+| eval data_sample_mtime=now()
+
+`comment(""##### Lookup previous values #####"")`
+| lookup trackme_data_sampling _key as key OUTPUT data_sample_iteration, data_sample_anomaly_ack_status, data_sample_anomaly_ack_mtime, multiformat_detected, data_sample_feature, data_sampling_nr, current_detected_format as previous_detected_format, current_detected_format_id as previous_detected_format_id, current_detected_format_dcount as previous_detected_format_dcount
+
+`comment(""##### Define the iteration #####"")`
+| eval data_sample_iteration=if(isnull(data_sample_iteration), 1, data_sample_iteration + 1)
+
+`comment(""##### Status evaluation ######"")`
+| eval data_sample_feature=if((current_detected_format_dcount>1 AND data_sample_iteration=1 AND exclusive_match_anomaly!=1) OR (current_detected_format_dcount=1 AND current_detected_format=""raw_not_identified"" AND data_sample_iteration=1), ""disabled"", if(isnull(data_sample_feature), ""enabled"", data_sample_feature) )
+| eval multiformat_detected=if(current_detected_format_dcount>1, ""true"", ""false"")
+
+`comment(""##### Define the data sample anomaly status #####"")`
+`comment(""##### If at first iteration over a data source, we detect a multi-format within the events sample, the data sampling feature will be disabled for this entity as results would certainly not be reliable in this context #####"")`
+
+| eval data_sample_anomaly_detected=case(
+exclusive_match_anomaly=1, 1,
+(previous_detected_format_id!=current_detected_format_id AND isnull(custom_rule_found)) OR (multiformat_detected=""true"") OR (current_detected_format_dcount=1 AND current_detected_format=""raw_not_identified"" AND data_sample_iteration=1), 1,
+isnull(data_sample_anomaly_detected), 0
+)
+
+| eval data_sample_anomaly_reason=case(
+exclusive_match_anomaly=1, ""exclusive_rule_match"",
+data_sample_iteration=1 AND multiformat_detected=""true"", ""multiformat_at_discovery"",
+current_detected_format_dcount=1 AND current_detected_format=""raw_not_identified"" AND data_sample_iteration=1, ""no_format_at_discovery"",
+data_sample_iteration!=1 AND multiformat_detected=""true"", ""multiformat_detected"",
+previous_detected_format_id!=current_detected_format_id AND isnull(custom_rule_found), ""format_change"",
+previous_detected_format_dcount!=current_detected_format_dcount, ""multiformat_change"",
+data_sample_anomaly_detected = ""0"", ""normal"")
+
+| eval data_sample_feature=if(data_sample_iteration=1 AND multiformat_detected==""true"" AND exclusive_match_anomaly!=1, ""disabled"", if(isnull(data_sample_feature), ""enabled"", data_sample_feature))
+
+`comment(""##### Format the status colour for UI rendering purposes #####"")`
+| eval data_sample_status_colour=case(
+data_sample_anomaly_detected = ""0"", ""green"",
+data_sample_anomaly_detected = ""1"" AND data_sample_anomaly_reason == ""multiformat_at_discovery"", ""orange"",
+data_sample_anomaly_detected = ""1"" AND data_sample_anomaly_reason == ""no_format_at_discovery"", ""orange"",
+data_sample_anomaly_detected = ""1"" AND data_sample_anomaly_reason == ""exclusive_rule_match"", ""red"",
+data_sample_anomaly_detected = ""1"" AND data_sample_anomaly_reason == ""format_change"", ""red"",
+data_sample_anomaly_detected = ""1"" AND data_sample_anomaly_reason == ""multiformat_change"", ""red"",
+data_sample_anomaly_detected = ""1"" AND data_sample_anomaly_reason == ""multiformat_detected"", ""red"",
+data_sample_feature == ""disabled"", ""grey""
+)
+
+`comment(""##### If the previous iteration detected an anomaly, and this alert was not cleared, the alert remains active until it is cleared effectively #####"")`
+| fillnull value=""N/A"" data_sample_anomaly_ack_status, data_sample_anomaly_ack_mtime, data_sample_anomaly_ack_previous_format, data_sample_anomaly_ack_new_format
+| eval data_sample_anomaly_detected=if(data_sample_anomaly_ack_status != ""N/A"", 1, data_sample_anomaly_detected)
+| eval data_sample_anomaly_ack_mtime=if(data_sample_anomaly_ack_status != ""N/A"" AND data_sample_anomaly_ack_mtime=""N/A"", data_sample_mtime, data_sample_anomaly_ack_mtime)
+| eval data_sample_anomaly_ack_previous_format=if(data_sample_anomaly_ack_status != ""N/A"" AND data_sample_anomaly_ack_previous_format=""N/A"", previous_detected_format, data_sample_anomaly_ack_previous_format)
+| eval data_sample_anomaly_ack_new_format=if(data_sample_anomaly_ack_status != ""N/A"" AND data_sample_anomaly_ack_new_format=""N/A"", current_detected_format, data_sample_anomaly_ack_new_format)
+
+`comment(""##### If the current iteration detects an anomaly and this is the first time of the detection #####"")`
+| eval data_sample_anomaly_ack_status = if(data_sample_anomaly_detected = 1 AND data_sample_anomaly_ack_status = ""N/A"", ""uncleared"", data_sample_anomaly_ack_status)
+| eval data_sample_anomaly_ack_mtime = if(data_sample_anomaly_detected = 1 AND data_sample_anomaly_ack_mtime = ""N/A"", data_sample_mtime, data_sample_anomaly_ack_mtime)
+| eval data_sample_anomaly_ack_previous_format = if(data_sample_anomaly_detected = 1 AND data_sample_anomaly_ack_previous_format = ""N/A"", previous_detected_format, data_sample_anomaly_ack_previous_format)
+| eval data_sample_anomaly_ack_new_format = if(data_sample_anomaly_detected = 1 AND data_sample_anomaly_ack_new_format = ""N/A"", previous_detected_format, data_sample_anomaly_ack_new_format)
+
+`comment(""#### Format the human friendly status message #####"")`
+| eval data_sample_status_message = case(
+data_sample_anomaly_detected = 0, ""INFO: No anomalies were detected during the last data sampling operated on "" . strftime(data_sample_mtime, ""%c"") . "", the status is "" . data_sample_anomaly_reason . "" and the data sampling feature is "" . data_sample_feature . "". Click on the button Manage data sampling for more details."",
+data_sample_anomaly_detected = 1 AND data_sample_anomaly_reason == ""exclusive_rule_match"", ""WARNING: Anomalies were detected in data sampling, an exclusive rule has match one or more events on "" . strftime(data_sample_anomaly_ack_mtime, ""%c"") . "", review the results and acknowledge the data sampling alert once the issue has been resolved. Click on the button Manage data sampling for more details."",
+data_sample_anomaly_detected = 1 AND data_sample_anomaly_reason == ""format_change"", ""WARNING: Anomalies were detected in data sampling, a change in the event format was detected on "" . strftime(data_sample_anomaly_ack_mtime, ""%c"") . "", review the format of the events and acknowledge the data sampling alert if this format change was expected. Click on the button Manage data sampling for more details."",
+data_sample_anomaly_detected = 1 AND (data_sample_anomaly_reason == ""multiformat_change"" OR data_sample_anomaly_reason == ""multiformat_detected""), ""WARNING: Anomalies were detected in data sampling, a change with multiple event formats was detected on "" . strftime(data_sample_anomaly_ack_mtime, ""%c"") . "", review the format of the events and acknowledge the data sampling alert if this format change was expected. Click on the button Manage data sampling for more details."",
+data_sample_anomaly_detected = 1 AND data_sample_anomaly_reason == ""multiformat_at_discovery"", ""WARNING: The data sampling feature has been disabled automatically because multiple event formats were detected during the first sampling operation on "" . strftime(data_sample_anomaly_ack_mtime, ""%c"") . "", sourcetypes containing multiple types of formats cannot be monitored by the data sampling properly. Click on the button Manage data sampling for more details."",
+data_sample_anomaly_detected = 1 AND data_sample_anomaly_reason == ""no_format_at_discovery"", ""WARNING: The data sampling feature has been disabled automatically because no event formats could be identified during the first sampling operation on "" . strftime(data_sample_anomaly_ack_mtime, ""%c"") . "", if the format is reliable but cannot be identified by the builtin rules, you can create a custom rule to handle this format. Click on the button Manage data sampling for more details.""
+)",
+"trackme_data_sampling_max_allowed_runtime_sec",,trackme,120,
+"trackme_data_sampling_obfuscation_mode",,trackme,"`trackme_data_sampling_obfuscation_mode_disabled`",
+"trackme_data_sampling_obfuscation_mode_disabled",,trackme,noop,
+"trackme_data_sampling_obfuscation_mode_enabled",,trackme,"eval raw_sample=""data sampling obfuscation mode is enabled, for data access complicancy purposes the sample events are not stored in the collection, please run the rules manually to investigate the sampling results, or run the Smart Status for this entity.""",
+"trackme_data_sampling_return_live_sample(1)",constraint,trackme,"savedsearch runSPL [
+
+| inputlookup trackme_data_source_monitoring where (_key=""$constraint$"" OR data_name=""$constraint$"") | eval key=_key
+`comment(""##### Once the KVstore content is loaded, we need to adress the specific case of Elastic sources #####"")`
+| `trackme_lookup_elastic_sources`
+
+`comment(""##### Define the search contraint dynamically #####"")`
+| eval search_constraint = if(isnull(elastic_source_search_constraint), ""index=\"""" . data_index . ""\"" "" . ""sourcetype=\"""" . data_sourcetype . ""\"""", elastic_source_search_constraint)
+| fields key, data_name, data_sourcetype, search_constraint, elastic_source_search_constraint, elastic_source_search_mode | where NOT (elastic_source_search_mode=""mstats"" OR elastic_source_search_mode=""from"")
+
+`comment(""##### Specific to cribl integration #####"")`
+| rex field=data_name ""\|cribl:(?<cribl_pipe>.*)""
+| eval search_constraint = if(isnotnull(cribl_pipe), search_constraint . "" cribl_pipe::"" . cribl_pipe, search_constraint)
+
+`comment(""##### Lookup the data sampling collection to retrieve the iteration ID of the data sampling, we use this to conditionally define the number of events to be retrieved at the first iteration #####"")`
+`comment(""##### In addition filter on entries where the feature is enabled or new entries only"")`
+| lookup trackme_data_sampling _key as key OUTPUT data_sample_iteration, data_sample_feature, data_sampling_nr, data_sample_anomaly_ack_status
+| fillnull value=""enabled"" data_sample_feature
+| eval data_sample_iteration=if(isnull(data_sample_iteration), 0, data_sample_iteration)
+
+`comment(""##### Finally generate the search to be used, the number of events sample to retrieve depends if this is the iteration for this entity #####"")`
+
+`comment(""##### If a number of records to sample is configured, this value will be used in priority, otherwise we define these via macro and conditions #####"")`
+| eval events_sample_range=if(isnum(data_sampling_nr), data_sampling_nr, if(data_sample_iteration=0, `trackme_data_sampling_default_sample_record_at_discovery`, `trackme_data_sampling_default_sample_record_at_run`) )
+
+| eval spl=search_constraint . "" | head "" . events_sample_range . "" | eval key = \"""" . key . ""\"" | eval data_name = \"""" . data_name . ""\"" | stats values(_raw) as raw_sample by key, data_name | eval data_sourcetype = \"""" . data_sourcetype . ""\"" | mvexpand raw_sample""
+| fields spl
+
+| eval prefix=""| append [ search ""
+| eval suffix="" ]""
+
+| streamstats count as line_count
+| eval spl = if(line_count!=1, prefix . spl . suffix, spl)
+
+| fields spl
+
+| mvcombine delim="" "" spl | nomv spl
+
+| append [ | makeresults | eval spl=if(isnull(spl), ""| makeresults"", spl) | fields - _time ] | head 1
+
+]
+
+| fields raw_sample | mvexpand raw_sample",
+"trackme_data_sampling_simulate_custom_rule",,trackme,"eval detected_format=if(isnull(detected_format), ""raw_not_identified"", detected_format) | eval detected_format_id = md5(detected_format) | fields state, detected_format*, model_type, raw_sample
+| stats values(detected_format) as detected_format, values(detected_format_id) as detected_format_id, dc(detected_format_id) as detected_format_dcount, first(model_type) as model_type, count as events_processed
+| eval multiformat_detected=if(detected_format_dcount>1, ""true"", ""false"")
+| eval state=case(
+model_type=""inclusive"", if(match(detected_format, ""^raw_not_identified$"") OR multiformat_detected=""true"", ""failure"", ""success""),
+model_type=""exclusive"", if(match(detected_format, ""^raw_not_identified$"") AND multiformat_detected=""false"", ""success"", ""failure"")
+)
+| eval status=case(
+model_type=""inclusive"", if(state=""success"", ""Simulation was successful, click on create rule to apply the rule now."", ""The rule could not match events or multiple formats were detected.""),
+model_type=""exclusive"", if(state=""success"", ""simulation was successful, click on create rule to apply the rule now."", ""An exclusive rule matched one or more events, verify these results before continuing."")
+)
+| fields state, status, detected_format, detected_format_id, multiformat_detected, events_processed
+| eval state = ""icon|"" + case(
+state==""success"", ""ico_good ico_small|icon-check|The data sampling simulation was successful"",
+state==""failure"", ""ico_error ico_small|icon-close|The data sampling simulation has failed""
+)
+| lookup trackme_data_sampling_custom_models model_name as detected_format OUTPUT model_name as matched_detected_format
+| eval status=if(isnotnull(matched_detected_format), ""A custom rule with the same name already exists in the collection"", status)
+| eval state=if(isnotnull(matched_detected_format), ""icon|ico_error ico_small|icon-close|The data sampling simulation has failed"", state)
+| fields - matched_detected_format",
+"trackme_data_source_cribl_mode",,trackme,"stats max(data_last_ingest) as data_last_ingest, min(data_first_time_seen) as data_first_time_seen, max(data_last_time_seen) as data_last_time_seen, avg(data_last_ingestion_lag_seen) as data_last_ingestion_lag_seen, sum(data_eventcount) as data_eventcount, max(dcount_host) as dcount_host by index, sourcetype, cribl_pipe
+| eval data_last_ingestion_lag_seen=round(data_last_ingestion_lag_seen, 0)
+
+`comment(""#### rename index and sourcetype ####"")`
+| rename index as data_index, sourcetype as data_sourcetype
+
+`comment(""#### create the data_name value ####"")`
+| eval data_name=data_index . "":"" . data_sourcetype . ""|cribl:"" . cribl_pipe",
+"trackme_data_source_merged_mode",,trackme,"stats max(data_last_ingest) as data_last_ingest, min(data_first_time_seen) as data_first_time_seen, max(data_last_time_seen) as data_last_time_seen, avg(data_last_ingestion_lag_seen) as data_last_ingestion_lag_seen, sum(data_eventcount) as data_eventcount, max(dcount_host) as dcount_host by index
+| eval data_last_ingestion_lag_seen=round(data_last_ingestion_lag_seen, 0)
+
+`comment(""#### rename index ####"")`
+| rename index as data_index
+
+`comment(""#### define pseudo sourcetype ####"")`
+| eval data_sourcetype=""*""
+
+`comment(""#### create the data_name value ####"")`
+| eval data_name=data_index . "":"" . ""all""",
+"trackme_data_source_split_bycustom_mode(1)",field,trackme,"stats max(data_last_ingest) as data_last_ingest, min(data_first_time_seen) as data_first_time_seen, max(data_last_time_seen) as data_last_time_seen, avg(data_last_ingestion_lag_seen) as data_last_ingestion_lag_seen, sum(data_eventcount) as data_eventcount, dc(host) as dcount_host by index, sourcetype, $field$
+| eval data_last_ingestion_lag_seen=round(data_last_ingestion_lag_seen, 0)
+
+`comment(""#### rename index and sourcetype ####"")`
+| rename index as data_index, sourcetype as data_sourcetype
+
+`comment(""#### create the data_name value ####"")`
+| eval data_name=data_index . "":"" . data_sourcetype . ""|key:$field$|"" . $field$",
+"trackme_data_source_split_mode",,trackme,"stats max(data_last_ingest) as data_last_ingest, min(data_first_time_seen) as data_first_time_seen, max(data_last_time_seen) as data_last_time_seen, avg(data_last_ingestion_lag_seen) as data_last_ingestion_lag_seen, sum(data_eventcount) as data_eventcount, dc(host) as dcount_host by index, sourcetype
+| eval data_last_ingestion_lag_seen=round(data_last_ingestion_lag_seen, 0)
+
+`comment(""#### rename index and sourcetype ####"")`
+| rename index as data_index, sourcetype as data_sourcetype
+
+`comment(""#### create the data_name value ####"")`
+| eval data_name=data_index . "":"" . data_sourcetype",
+"trackme_data_source_tracker_abstract",,trackme,"`comment(""#### define the ingestion lag versus now, and a flag field defining an online status any results from live tstats ####"")`
+| eval data_last_lag_seen=now()-data_last_time_seen, data_source_is_online=""true""
+
+`comment(""#### some rename to keep the same convention across other trackers ####"")`
+| rename data_last_ingestion_lag_seen as live_data_last_ingestion_lag_seen, data_last_ingest as live_data_last_ingest, data_first_time_seen as live_data_first_time_seen, data_last_time_seen as live_data_last_time_seen, data_last_lag_seen as live_data_last_lag_seen, data_eventcount as live_data_eventcount
+
+`comment(""#### appends the current collection entries ####"")`
+
+| inputlookup append=t trackme_data_source_monitoring | eval key=_key
+| stats first(*) as ""*"" by data_name
+
+`comment(""#### manage live information ####"")`
+| eval data_last_ingest=if(isnotnull(live_data_last_ingest), live_data_last_ingest, data_last_ingest)
+| eval data_first_time_seen=if(isnotnull(data_first_time_seen), data_first_time_seen, live_data_first_time_seen)
+| eval data_last_time_seen=if(isnotnull(live_data_last_time_seen), live_data_last_time_seen, data_last_time_seen)
+| eval data_last_lag_seen=if(isnotnull(live_data_last_lag_seen), live_data_last_lag_seen, data_last_lag_seen)
+| eval data_last_ingestion_lag_seen=if(isnotnull(live_data_last_ingestion_lag_seen), live_data_last_ingestion_lag_seen, data_last_ingestion_lag_seen)
+
+`comment(""note for data_eventcount: to avoid wrongly impacting the status with Outliers detection for cold data, keep the last eventcount"")`
+| eval data_eventcount=if(isnotnull(live_data_eventcount), live_data_eventcount, data_eventcount)
+| fields - live_*
+
+`comment(""#### manage previous values ####"")`
+| rename data_source_state as data_previous_source_state, data_tracker_runtime as data_previous_tracker_runtime
+
+`comment(""#### if the key is null, this is the first time we see this source and it will be added to the collection, create a key ####"")`
+| eval key=if(isnull(key), md5(data_name), key)
+
+`comment(""#### apply default policies ####"")`
+| `trackme_default_monitored_state`
+| `trackme_default_lag`
+| `trackme_default_alert_over_kpis`
+| `trackme_default_monitored_wdays`
+| `trackme_default_priority`
+| `trackme_default_min_dcount_host`
+
+`comment(""#### handle override lagging class ####"")`
+| eval data_override_lagging_class=if(isnull(data_override_lagging_class) OR data_override_lagging_class=""null"", ""false"", data_override_lagging_class)
+
+`comment(""#### lookup any defined rule for max lagging based on index or sourcetype ####"")`
+
+`comment("" match if object=all"")`
+| eval lagging_class_object=""all"" | lookup trackme_custom_lagging_definition name as data_index, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed, level as lagging_class_level | eval data_custom_max_lag_allowed=if(lagging_class_level!=""index"", null(), data_custom_max_lag_allowed) | fields - lagging_class_level, lagging_class_object
+`comment("" match if object=data_source"")`
+| eval lagging_class_object=""data_source"" | lookup trackme_custom_lagging_definition name as data_index, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed, level as lagging_class_level | eval data_custom_max_lag_allowed=if(lagging_class_level!=""index"", null(), data_custom_max_lag_allowed) | fields - lagging_class_level, lagging_class_object
+
+`comment("" match if object=all"")`
+| eval lagging_class_object=""all"" | lookup trackme_custom_lagging_definition name as data_sourcetype, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed, level as lagging_class_level | eval data_custom_max_lag_allowed=if(lagging_class_level!=""sourcetype"" AND isnotnull(data_custom_max_lag_allowed), null(), data_custom_max_lag_allowed) | fields - lagging_class_level, lagging_class_object
+`comment("" match if object=data_source"")`
+| eval lagging_class_object=""data_source"" | lookup trackme_custom_lagging_definition name as data_sourcetype, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed, level as lagging_class_level | eval data_custom_max_lag_allowed=if(lagging_class_level!=""sourcetype"" AND isnotnull(data_custom_max_lag_allowed), null(), data_custom_max_lag_allowed) | fields - lagging_class_level, lagging_class_object
+
+`comment("" match if object=all"")`
+| eval lagging_class_object=""all"" | lookup trackme_custom_lagging_definition name as priority, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed, level as lagging_class_level | eval data_custom_max_lag_allowed=if(lagging_class_level!=""priority"" AND isnotnull(data_custom_max_lag_allowed), null(), data_custom_max_lag_allowed) | fields - lagging_class_level, lagging_class_object
+`comment("" match if object=data_source"")`
+| eval lagging_class_object=""data_source"" | lookup trackme_custom_lagging_definition name as priority, object as lagging_class_object OUTPUTNEW value as data_custom_max_lag_allowed, level as lagging_class_level | eval data_custom_max_lag_allowed=if(lagging_class_level!=""priority"" AND isnotnull(data_custom_max_lag_allowed), null(), data_custom_max_lag_allowed) | fields - lagging_class_level, lagging_class_object
+
+`comment(""#### conditionally handle data_max_lag_allowed ####"")`
+| eval data_max_lag_allowed	=if(isnum(data_custom_max_lag_allowed) AND data_override_lagging_class!=""true"", data_custom_max_lag_allowed, data_max_lag_allowed)
+| fields - data_custom_max_lag_allowed
+
+`comment(""#### exclude any permanent deletion stored in the trackme_audit_change lookup ####"")`
+| search NOT [ | inputlookup trackme_audit_changes | where action=""success"" AND change_type=""delete permanent"" | eval _time=time/1000 | where _time>relative_time(now(), ""-7d"") | table object | dedup object | sort limit=0 object | rename object as data_name ]
+
+`comment(""#### conditionally define data_monitoring_level ####"")`
+| eval data_monitoring_level=if(isnull(data_monitoring_level), ""sourcetype"", data_monitoring_level)
+
+`comment(""#### calculate last time seen and lag per index ####"")`
+| eventstats max(data_last_time_seen) as data_last_time_seen_idx, min(data_last_lag_seen) as data_last_lag_seen_idx by data_index
+
+`comment(""#### filter sources ####"")`
+| `trackme_data_sources_filtering`
+
+`comment(""#### define the object_category field which is used by further lookup operations ####"")`
+| eval object_category=""data_source""
+
+`comment(""#### retrieve summary investigator analytic ####"")`
+| inputlookup append=t trackme_summary_investigator_volume_outliers
+
+`comment(""#### retrieve summary data sampling analytic ####"")`
+| inputlookup append=t trackme_data_sampling | fields - raw_sample
+
+| eval data_name=if(isnull(data_name) AND object_category=""data_source"", object, data_name)
+| where isnotnull(data_name)
+| stats first(*) as ""*"" by data_name
+| where isnotnull(key)
+
+`comment(""#### fillnull for OutlierMinEventCount, isOutlier ####"")`
+| fillnull value=0 OutlierMinEventCount
+| fillnull value=0 isOutlier
+
+`comment(""#### OutlierMinEventCount needs to be equal to 0 if set to non numerical value ####"")`
+| eval OutlierMinEventCount=if(isnum(OutlierMinEventCount), OutlierMinEventCount, 0)
+
+`comment(""#### Define the default outlier threshold multiplier ####"")`
+| eval OutlierLowerThresholdMultiplier=if(isnum(OutlierLowerThresholdMultiplier), OutlierLowerThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+| eval OutlierUpperThresholdMultiplier=if(isnum(OutlierUpperThresholdMultiplier), OutlierUpperThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+
+`comment(""#### Define the behaviour for alerting on upper bound ####"")`
+| eval OutlierAlertOnUpper=if(isnotnull(OutlierAlertOnUpper), OutlierAlertOnUpper, `trackme_default_outlier_alert_on_upper`)
+
+`comment(""#### Define the default period for Outliers calculations ####"")`
+| eval OutlierTimePeriod=if(isnotnull(OutlierTimePeriod), OutlierTimePeriod, `trackme_default_outlier_period`)
+
+`comment(""#### Define the default value for Outliers span ####"")`
+| eval OutlierSpan=if(isnotnull(OutlierSpan), OutlierSpan, ""5m"")
+
+`comment(""#### define a status for enable_behaviour_analytic ####"")`
+| eval enable_behaviour_analytic=if(isnull(enable_behaviour_analytic) OR enable_behaviour_analytic="""", `trackme_default_enable_behaviour_analytic`, enable_behaviour_analytic)
+
+`comment(""#### define isOutlier status ####"")`
+| `trackme_isOutlier_status`
+
+`comment(""#### define a status for data_sample_feature #####"")`
+| eval data_sample_feature=if(isnull(data_sample_feature), ""enabled"", data_sample_feature)
+
+`comment(""#### define a status for data_sample_status_colour #####"")`
+| eval data_sample_status_colour=if(isnull(data_sample_status_colour), ""green"", data_sample_status_colour)
+
+`comment(""#### isAnomaly is the data sampling and format recognition status, red equals to an anomaly #####"")`
+| eval isAnomaly=if(data_sample_status_colour==""red"", 1, 0)
+
+`comment(""#### store and register the last sample run #####"")`
+| eval data_sample_lastrun=if(isnum(data_sample_mtime), data_sample_mtime, 0)
+
+`comment(""#### eval state source ####"")`
+| `trackme_eval_data_source_state`
+
+`comment(""#### data_tracker_runtime is now ####"")`
+| eval data_tracker_runtime=now()
+
+`comment(""#### conditional verifications ####"")`
+| eval data_previous_source_state=if(isnull(data_previous_source_state), ""discovered"", data_previous_source_state)
+| eval data_previous_tracker_runtime=if(isnull(data_previous_tracker_runtime), now(), data_previous_tracker_runtime)
+| eval latest_flip_state=if(isnull(latest_flip_state), data_previous_source_state, latest_flip_state)
+| eval latest_flip_time=if(isnull(latest_flip_time), data_previous_tracker_runtime, latest_flip_time)
+
+| where isnotnull(data_last_time_seen)
+| eval data_last_lag_seen=if(data_source_is_online=""true"", data_last_lag_seen, now()-data_last_time_seen)
+
+`comment(""#### auto disable monitoring status based on policies ####"")`
+| eval data_monitored_state=if(data_last_time_seen<=`trackme_auto_disablement_period`, ""disabled"", data_monitored_state)
+
+`comment(""#### Apply tags policies ####"")`
+| `trackme_tags_policies_apply(data_name)`",
+"trackme_data_source_tstats_root_splitby",,trackme,"`trackme_data_source_tstats_root_splitby_regular`",
+"trackme_data_source_tstats_root_splitby_cribl",,trackme,"index, sourcetype, cribl_pipe",
+"trackme_data_source_tstats_root_splitby_custom(1)",field,trackme,"index, sourcetype, $field$, host",
+"trackme_data_source_tstats_root_splitby_regular",,trackme,"index, sourcetype, host",
+"trackme_data_sources_filtering",,trackme,"search data_name=*",
+"trackme_date_format(1)","input_field",trackme,"eval ""$input_field$ (translated)""=strftime($input_field$, ""%d/%m/%Y %H:%M"")",
+"trackme_default_alert_over_kpis",,trackme,"eval data_lag_alert_kpis=if(isnull(data_lag_alert_kpis), ""all_kpis"", data_lag_alert_kpis)",
+"trackme_default_data_host_alert_global_policy",,trackme,"eval data_host_alerting_policy=if(isnull(data_host_alerting_policy), ""global_policy"", data_host_alerting_policy)",
+"trackme_default_data_host_alert_policy",,trackme,"""track_per_host""",
+"trackme_default_data_source_mode",,trackme,"`trackme_data_source_split_mode`",
+"trackme_default_enable_behaviour_analytic",,trackme,"""true""",
+"trackme_default_host_lag",,trackme,"eval data_max_lag_allowed=if(isnull(data_max_lag_allowed), ""3600"", data_max_lag_allowed)",
+"trackme_default_host_monitored_state",,trackme,"eval data_monitored_state=if(isnull(data_monitored_state), ""enabled"", data_monitored_state)",
+"trackme_default_host_monitored_wdays",,trackme,"eval data_monitoring_wdays=if(isnull(data_monitoring_wdays), ""auto:all_days"", data_monitoring_wdays)",
+"trackme_default_lag",,trackme,"eval data_max_lag_allowed=if(isnull(data_max_lag_allowed), ""3600"", data_max_lag_allowed)",
+"trackme_default_metric_host_lag",,trackme,"eval metric_max_lag_allowed=if(isnull(metric_max_lag_allowed), ""300"", metric_max_lag_allowed)",
+"trackme_default_metric_host_monitored_state",,trackme,"eval metric_monitored_state=if(isnull(metric_monitored_state), ""enabled"", metric_monitored_state)",
+"trackme_default_min_dcount_host",,trackme,"eval min_dcount_host=if(isnull(min_dcount_host), ""any"", min_dcount_host)",
+"trackme_default_monitored_state",,trackme,"eval data_monitored_state=if(isnull(data_monitored_state), ""enabled"", data_monitored_state)",
+"trackme_default_monitored_wdays",,trackme,"eval data_monitoring_wdays=if(isnull(data_monitoring_wdays), ""auto:all_days"", data_monitoring_wdays)",
+"trackme_default_outlier_alert_on_upper",,trackme,"""false""",
+"trackme_default_outlier_period",,trackme,"""-7d""",
+"trackme_default_outlier_threshold_multiplier",,trackme,4,
+"trackme_default_priority",,trackme,"eval priority=if(isnull(priority), ""medium"", priority)",
+"trackme_donut_alert_by_priority",,trackme,"eval color=case(
+priority=""low"", ""#cce5ff"",
+priority=""medium"", ""#7fbfff"",
+priority=""high"", ""#3298ff"")
+| eval order=case(
+priority=""low"", 0,
+priority=""medium"", 1,
+priority=""high"", 2)
+| sort order | fields - order",
+"trackme_donut_alert_by_type(1)",key,trackme,"eval color=case(
+$key$=""green"", ""#77dd77"",
+$key$=""blue"", ""#779ecb"",
+$key$=""orange"", ""#ffb347"",
+$key$=""red - other priority"", ""#ff6961"",
+$key$=""red - high priority"", ""#c23b22"")
+| eval order=case(
+$key$=""green"", 0,
+$key$=""blue"", 1,
+$key$=""orange"", 2,
+$key$=""red - other priority"", 3,
+$key$=""red - other priority"", 4)
+| sort order | fields - order",
+"trackme_elastic_dedicated_tracker",,trackme,"where isnotnull(data_name) AND data_eventcount>0
+
+`comment(""#### define data_last_ingestion_lag_seen ####"")`
+| eval data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen
+
+`comment(""#### Specific to elastic sources ####"")`
+| eval data_index=if(isnull(data_index) OR data_index=""none"", data_name, data_index)
+| eval data_sourcetype=if(isnull(data_sourcetype) OR data_sourcetype=""none"", data_name, data_sourcetype)
+
+`comment(""#### call the abstract macro ####"")`
+`trackme_data_source_tracker_abstract`
+
+`comment(""#### collects latest collection state into the summary index ####"")`
+| `trackme_collect_state(""current_state_tracking:data_source"", ""data_name"")`
+
+`comment(""#### output flipping change status if changes ####"")`
+| `trackme_get_flip(data_source_state, data_previous_source_state, data_name, trackme_audit_flip_temp_data_source_dedicated)`
+
+`comment(""#### run collect and updates the KVstore ####"")`
+| `trackme_outputlookup(trackme_data_source_monitoring, key)`
+| `trackme_mcollect(data_name, data_source, ""metric_name:trackme.eventcount_4h=data_eventcount, metric_name:trackme.hostcount_4h=dcount_host, metric_name:trackme.lag_event_sec=data_last_lag_seen, metric_name:trackme.lag_ingestion_sec=data_last_ingestion_lag_seen"", ""object_category, object, OutlierTimePeriod, enable_behaviour_analytic"")`
+| stats c",
+"trackme_elastic_dedicated_tracker(1)","tracker_name",trackme,"where isnotnull(data_name) AND data_eventcount>0
+
+`comment(""#### define data_last_ingestion_lag_seen ####"")`
+| eval data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen
+
+`comment(""#### Specific to elastic sources ####"")`
+| eval data_index=if(isnull(data_index) OR data_index=""none"", data_name, data_index)
+| eval data_sourcetype=if(isnull(data_sourcetype) OR data_sourcetype=""none"", data_name, data_sourcetype)
+
+`comment(""#### call the abstract macro ####"")`
+`trackme_data_source_tracker_abstract`
+
+| where data_name=""$tracker_name$""
+
+`comment(""#### collects latest collection state into the summary index ####"")`
+| `trackme_collect_state(""current_state_tracking:data_source"", ""data_name"")`
+
+`comment(""#### output flipping change status if changes ####"")`
+| `trackme_get_flip(data_source_state, data_previous_source_state, data_name, trackme_audit_flip_temp_data_source_dedicated)`
+`comment(""#### run collect and updates the KVstore ####"")`
+| `trackme_outputlookup(trackme_data_source_monitoring, key)`
+| `trackme_mcollect(data_name, data_source, ""metric_name:trackme.eventcount_4h=data_eventcount, metric_name:trackme.lag_event_sec=data_last_lag_seen, metric_name:trackme.lag_ingestion_sec=data_last_ingestion_lag_seen"", ""object_category, object, OutlierTimePeriod, enable_behaviour_analytic"")`
+| stats c",
+"trackme_elastic_sources_simulate(3)","data_name,earliest_time,latest_time",trackme,"rex field=search_constraint ""^(?<from_part1>[^\|]*)\|{0,1}(?<from_part2>.*)"" | eval from_part2=if(search_mode=""from"" AND (isnull(from_part2) OR from_part2=""""), ""search *"", from_part2)
+| rex field=search_constraint ""(?<rest_target>(?:splunk_server|splunk_server_group)\=[^\|]*)\s{0,}\|\s{0,}(?<rest_constrainst>.*)""
+| rex field=search_constraint ""(?<rest_target>(?:splunk_server|splunk_server_group)\=[^\|]*)\s{0,}\|\s{0,}(?<rest_constrainst_part1>[^\|]*\s{0,})\|{0,1}\s{0,}(?<rest_constrainst_part2>.*)""
+| rex field=rest_constrainst mode=sed ""s/\""/\\\""/g""
+| rex field=rest_constrainst_part1 mode=sed ""s/\""/\\\""/g""
+| rex field=rest_constrainst_part2 mode=sed ""s/\""/\\\""/g""
+| eval rest_constrainst_part2=if(search_mode=""rest_from"" AND (isnull(rest_constrainst_part2) OR rest_constrainst_part2=""""), ""search *"", rest_constrainst_part2)
+| `trackme_eval_spl`
+| eval spl=if(match(search_mode, ""^rest_\w+""), spl . "" output_mode=\""csv\"" "" . "" earliest_time=\""$earliest_time$\"" "" . "" latest_time=\""$latest_time$\"" "" . ""| head 1 | table value | restextract"", spl)
+| fields spl | eval prefix=""| append [ "", eval suffix="" ]""
+| streamstats count as line_count
+| eval spl = if(line_count!=1, prefix . spl . suffix, spl)
+| fields spl
+| stats list(spl) AS spl
+| eval spl=mvjoin(spl, "" "")
+| append [ | makeresults | eval spl=if(isnull(spl), ""| makeresults"", spl) | fields - _time ] | head 1 ]
+| where isnotnull(data_name) AND data_eventcount>0
+`comment(""#### The macro expects a different name for the first time seen ####"")`
+| rename data_first_time_seen as data_first_time_seen
+| eval data_index=if(isnull(data_index) OR data_index=""none"", data_name, data_index)
+| eval data_sourcetype=if(isnull(data_sourcetype) OR data_sourcetype=""none"", data_name, data_sourcetype)
+| eval simulation=""true""
+`trackme_data_source_tracker_abstract`
+| append [ | makeresults | eval data_name=""$data_name$"", simulation_results=""No results found, please verify your search."" | fields - _time ]
+| fillnull value=""Success, you can now add this new source to the shared tracker or as a dedicated tracker."" simulation_results
+| lookup trackme_elastic_sources data_name OUTPUTNEW data_name as data_name_found
+| lookup trackme_elastic_sources_dedicated data_name OUTPUTNEW data_name as data_name_found
+| eval simulation_results=if(isnotnull(data_name_found), ""ERROR: this data_source was found in the collection!"", simulation_results)
+| eval "" "" = case(
+simulation_results=""No results found, please verify your search."", ""icon|ico_warn ico_small|icon-close|no results"",
+simulation_results=""ERROR: this data_source was found in the collection!"", ""icon|ico_error ico_small|icon-close|error"",
+simulation_results=""Success, you can now add this new source to the shared tracker or as a dedicated tracker."", ""icon|ico_good ico_small|icon-check|success"")
+| fields "" "", simulation_results, data_name, data*, * | where data_name=""$data_name$""
+| head 1",
+"trackme_eval_data_host_state",,trackme,"eval system_behaviour_analytic_mode=`trackme_system_enable_behaviour_analytic_mode`
+| eval system_behaviour_analytic_mode=if(system_behaviour_analytic_mode=""enabled"" OR system_behaviour_analytic_mode=""training"" OR system_behaviour_analytic_mode=""disabled"", system_behaviour_analytic_mode, ""enabled"")
+| eval isOutlier=if(match(system_behaviour_analytic_mode, ""(?i)^(enabled|training)$""), isOutlier, 0)
+| eval default_data_host_alerting_policy=`trackme_default_data_host_alert_policy`, data_host_alerting_policy=if(isnull(data_host_alerting_policy), ""global_policy"", data_host_alerting_policy)
+| eval data_host_state=if(case(
+data_lag_alert_kpis=""all_kpis"", data_last_lag_seen>data_max_lag_allowed OR data_last_ingestion_lag_seen>data_max_lag_allowed OR (isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""enabled""),
+data_lag_alert_kpis=""lag_ingestion_kpi"", data_last_ingestion_lag_seen>data_max_lag_allowed OR (isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""enabled""),
+data_lag_alert_kpis=""lag_event_kpi"", data_last_lag_seen>data_max_lag_allowed OR (isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""enabled"")), ""red"", ""green"")
+| eval data_host_state=if(isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""training"", ""orange"", data_host_state)
+| eval data_host_state=case(
+data_host_alerting_policy=""global_policy"" AND default_data_host_alerting_policy=""track_per_host"", data_host_state,
+data_host_alerting_policy=""global_policy"" AND default_data_host_alerting_policy=""track_per_sourcetype"", if(match(data_host_st_summary, ""state=red""), ""red"", data_host_state),
+data_host_alerting_policy=""track_per_host"", data_host_state,
+data_host_alerting_policy=""track_per_sourcetype"", if(match(data_host_st_summary, ""state=red""), ""red"", data_host_state)
+)
+| fields - system_behaviour_analytic_mode
+| eval current_wday=strftime(now(), ""%a"")
+| eval current_wday_no=strftime(now(), ""%w"")
+| eval data_host_state=if(match(data_monitoring_wdays, ""^(auto|manual):all_days"") AND match(current_wday, "".*"") AND data_host_state=""red"", ""red"", data_host_state)
+| eval data_host_state=if(match(data_monitoring_wdays, ""^(auto|manual):monday-to-friday"") AND match(current_wday, ""Sat|Sun"") AND data_host_state=""red"", ""orange"", data_host_state)
+| eval data_host_state=if(match(data_monitoring_wdays, ""^(auto|manual):monday-to-saturday"") AND match(current_wday, ""Sun"") AND data_host_state=""red"", ""orange"", data_host_state)
+| rex field=data_monitoring_wdays ""^(manual|auto)\:(?<data_monitoring_wdays_no>\d.*)""
+| makemv delim="","" data_monitoring_wdays_no
+| eval data_host_state=if(isnotnull(data_monitoring_wdays_no) AND current_wday_no!=data_monitoring_wdays_no AND data_host_state=""red"", ""orange"", data_host_state)
+| eval data_host_state=if(isnull(data_last_time_seen), ""red"", data_host_state)
+| eval data_host_state=if(data_last_lag_seen<`trackme_future_indexing_tolerance`, ""orange"", data_host_state)
+| fields - current_*, data_monitoring_wdays_no",
+"trackme_eval_data_source_state",,trackme,"eval system_behaviour_analytic_mode=`trackme_system_enable_behaviour_analytic_mode`
+| eval system_behaviour_analytic_mode=if(system_behaviour_analytic_mode=""enabled"" OR system_behaviour_analytic_mode=""training"" OR system_behaviour_analytic_mode=""disabled"", system_behaviour_analytic_mode, ""enabled"")
+| eval isOutlier=if(match(system_behaviour_analytic_mode, ""(?i)^(enabled|training)$""), isOutlier, 0)
+| eval isAnomaly=if(isnull(isAnomaly), 0, isAnomaly)
+| eval data_source_state=case(
+data_monitoring_level=""index"", if(data_last_lag_seen_idx>data_max_lag_allowed, ""red"", ""green""),
+data_monitoring_level=""sourcetype"", if(case(
+data_lag_alert_kpis=""all_kpis"", data_last_lag_seen>data_max_lag_allowed OR data_last_ingestion_lag_seen>data_max_lag_allowed OR (isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""enabled""),
+data_lag_alert_kpis=""lag_ingestion_kpi"", data_last_ingestion_lag_seen>data_max_lag_allowed OR (isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""enabled""),
+data_lag_alert_kpis=""lag_event_kpi"", data_last_lag_seen>data_max_lag_allowed OR (isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""enabled"")), ""red"", ""green""))
+| eval data_source_state=if(isOutlier=1 AND enable_behaviour_analytic=""true"" AND system_behaviour_analytic_mode=""training"", ""orange"", data_source_state)
+| fields - system_behaviour_analytic_mode
+| eval data_source_state=if(isAnomaly=1, ""red"", data_source_state)
+| eval current_wday=strftime(now(), ""%a"")
+| eval current_wday_no=strftime(now(), ""%w"")
+| eval data_source_state=if(match(data_monitoring_wdays, ""^(auto|manual):all_days"") AND match(current_wday, "".*"") AND data_source_state=""red"", ""red"", data_source_state)
+| eval data_source_state=if(match(data_monitoring_wdays, ""^(auto|manual):monday-to-friday"") AND match(current_wday, ""Sat|Sun"") AND data_source_state=""red"", ""orange"", data_source_state)
+| eval data_source_state=if(match(data_monitoring_wdays, ""^(auto|manual):monday-to-saturday"") AND match(current_wday, ""Sun"") AND data_source_state=""red"", ""orange"", data_source_state)
+`comment(""#### prepare fields info for week days monitoring rules ####"")`
+| rex field=data_monitoring_wdays ""^(manual|auto)\:(?<data_monitoring_wdays_no>\d.*)""
+| makemv delim="","" data_monitoring_wdays_no
+| eval data_source_state=if(isnull(data_last_time_seen), ""red"", data_source_state)
+| eval data_source_state=if(data_last_lag_seen<`trackme_future_indexing_tolerance`, ""orange"", data_source_state)
+| eval data_source_state=if(isnum(min_dcount_host) AND min_dcount_host>=1 AND dcount_host<min_dcount_host, ""red"", data_source_state)
+`comment(""#### week days monitoring rules should be the last verification during the state assignment"")`
+| eval data_source_state=if(isnotnull(data_monitoring_wdays_no) AND current_wday_no!=data_monitoring_wdays_no AND data_source_state=""red"", ""orange"", data_source_state)
+| fields - current_*, data_monitoring_wdays_no",
+"trackme_eval_icons",,trackme,"fillnull value=""NA"" ""data_last_time_seen (translated)"", data_last_lag_seen, data_max_lag_allowed, data_last_ingestion_lag_seen
+| fillnull value=0 isOutlier
+| eval system_behaviour_analytic_mode=`trackme_system_enable_behaviour_analytic_mode`
+| eval isOutlier=if(match(system_behaviour_analytic_mode, ""(?i)^(enabled|training)$""), isOutlier, 0)
+| fields - system_behaviour_analytic_mode
+| eval state = ""icon|"" + case(
+data_source_state==""green"" AND data_monitoring_level=""sourcetype"" AND isOutlier=0, ""ico_good ico_small|icon-check|Good: data source status is green, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now), and monitoring conditions are met."",
+data_source_state==""green"" AND data_monitoring_level=""index"" AND isOutlier=0, ""ico_good ico_small|icon-check|Good: data source status is green, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now), however data monitoring level is set at index level, which complies with a max lag of "" . data_max_lag_allowed . "" seconds for that index."",
+data_source_state==""red"" AND isOutlier=0 AND isAnomaly=0 AND (isnum(min_dcount_host) AND dcount_host<min_dcount_host), ""ico_error ico_small|icon-close|Alert: data source status is red, monitoring conditions are not met due to the number of distinct hosts in the data source being below the accepted threshold (min_dcount_host: "" . min_dcount_host . "" / dcount_host: "" . dcount_host . "")."",
+data_source_state==""red"" AND isOutlier=0 AND isAnomaly=0, ""ico_error ico_small|icon-close|Alert: data source status is red, monitoring conditions are not met due to lagging or interruption in the data flow, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now) and ingestion latency is approximately "" . data_last_ingestion_lag_seen . "" seconds, max lag configured is "" . data_max_lag_allowed . "" seconds."",
+data_source_state==""red"" AND isOutlier=1 AND isAnomaly=0, ""ico_error ico_small|icon-close|Alert: data source status is red, monitoring conditions are not met due to outlier detection in the event count activity, review the Outlier detection window to investigate. For this source, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now) and ingestion latency is approximately "" . data_last_ingestion_lag_seen . "" seconds, max lag configured is "" . data_max_lag_allowed . "" seconds."",
+data_source_state==""red"" AND isAnomaly=1, ""ico_error ico_small|icon-close|Alert: data source status is red, monitoring conditions are not met due to anomalies detected in the data sampling and format recognition, review the data sampling window to investigate. This alert means that trackMe detected an issue in the format of the events compared to the format that was previously identified for this source."",
+data_source_state==""orange"" AND isAnomaly=1, ""ico_warn ico_small|icon-close|Warn: data source status is orange, monitoring conditions are not met due to anomalies detected in the data sampling and format recognition, review the data sampling window to investigate. This alert means that trackMe detected an issue in the format of the events compared to the format that was previously identified for this source. Howener, week days rules conditions are not met."",
+data_source_state==""orange"" AND isOutlier=1, ""ico_warn ico_small|icon-close|Warn: data source status is orange, monitoring conditions are not met due to outlier detection in the event count activity, review the Outlier detection window to investigate. For this source, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now) and ingestion latency is approximately "" . data_last_ingestion_lag_seen . "" seconds, max lag configured is "" . data_max_lag_allowed . "" seconds."",
+data_source_state==""orange"" AND isnull(object_group_name) AND data_last_lag_seen>=`trackme_future_indexing_tolerance` AND (dcount_host>=min_dcount_host OR min_dcount_host=""any""), ""ico_warn ico_small|icon-close|Warn: data source status is orange, lagging conditions are met, latest data available is "" . '	data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now), max lag configured in seconds is "" . data_max_lag_allowed . "". However, week days rules conditions are not met."",
+data_source_state==""orange"" AND (dcount_host<min_dcount_host AND min_dcount_host!=""any""), ""ico_warn ico_small|icon-close|Warn: data source status is orange, monitoring conditions are not met due to the number of distinct hosts in the data source being below the accepted threshold (min_dcount_host: "" . min_dcount_host . "" / dcount_host: "" . dcount_host . ""), however week days rules conditions are not met."",
+data_source_state==""blue"" AND isnotnull(object_group_name) AND data_last_lag_seen>=`trackme_future_indexing_tolerance`, ""ico_unknown ico_small|icon-close|Info: data source does not honour lagging or week days monitoring conditions however it is a member of a logical group named: "" . object_group_name . "" which is honouring monitoring rules , the group green status percentage is "" . object_group_green_percent . "" % which complies with a minimal "" . object_group_min_green_percent . "" % green members configured for that group."" . ""(members: "" . 	object_group_members_count . ""/ red status members count: "" . 	object_group_members_red . "", latest data available for the group: "" . object_group_last_lag_seen . "" seconds from now)"",
+data_source_state==""orange"" AND data_last_lag_seen<`trackme_future_indexing_tolerance`, ""ico_warn ico_small|icon-close|Warn: data source status is orange, detected data indexed in the future which is most likely due to timestamping misconfiguration, timezone or time synchronization issue, latest data available is "" . '	data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now), max lag configured in seconds is "" . data_max_lag_allowed . "".""),
+monitoring = ""icon|"" + if(data_monitored_state==""enabled"", ""ico_good ico_small|icon-check|Enabled: data source is being actively monitored"", ""ico_error ico_small|icon-close|Disabled: data source monitoring is disabled"")
+| rex field=state ""[^\|]*\|[^\|]*\|[^\|]*\|(?<status_message>.*)""",
+"trackme_eval_icons_audit_changes",,trackme,"eval action_icon = ""icon|"" + case(
+action==""success"", ""ico_good ico_small|icon-check|Up: change action was successful"",
+action!=""success"", ""ico_error ico_small|icon-close|Down: change action was refused or its status is unknown"")",
+"trackme_eval_icons_data_sampling_enablement",,trackme,"eval data_sample_feature = ""icon|"" + case(
+data_sample_feature==""enabled"", ""ico_good ico_small|icon-check|The data sampling and format detection feature is enabled"",
+data_sample_feature==""disabled"", ""ico_error ico_small|icon-close|The data sampling and format detection feature is disabled""
+)",
+"trackme_eval_icons_data_sampling_summary",,trackme,"eval state = ""icon|"" + case(
+data_sample_status_colour==""green"", ""ico_good ico_small|icon-check|"" . data_sample_status_message,
+data_sample_status_colour==""orange"", ""ico_warn ico_small|icon-close|"" . data_sample_status_message,
+data_sample_status_colour==""red"", ""ico_error ico_small|icon-close|"" . data_sample_status_message,
+data_sample_status_colour==""blue"", ""ico_unknown ico_small|icon-close|"" . data_sample_status_message
+)",
+"trackme_eval_icons_flip",,trackme,"eval object_previous_state = ""icon|"" + case(
+object_previous_state==""green"", ""ico_good ico_small|icon-check|Up: object is available and marked as green due to monitoring rules being met"",
+object_previous_state==""red"", ""ico_error ico_small|icon-close|Down: object is not available or marked as down due to rules monitoring"",
+object_previous_state==""orange"", ""ico_warn ico_small|icon-close|Warn: object is not available but marked as warn due to monitoring rules"",
+object_previous_state==""blue"", ""ico_unknown ico_small|icon-close|Info: object is not available however it is a member of a logical group which monitoring rules are met"",
+object_previous_state==""discovered"", ""ico_unknown ico_small|icon-close|Info: object was discovered and added to the collections""),
+object_state = ""icon|"" + case(object_state==""green"", ""ico_good ico_small|icon-check|Up: object is available and marked as green due to monitoring rules being met"",
+object_state==""red"", ""ico_error ico_small|icon-close|Down: object is not available or marked as down due to rules monitoring"",
+object_state==""orange"", ""ico_warn ico_small|icon-close|Warn: object is not available but marked as warn due to monitoring rules"",
+object_state==""blue"", ""ico_unknown ico_small|icon-close|Info: object is not available however it is a member of a logical group which monitoring rules are met"")",
+"trackme_eval_icons_host",,trackme,"fillnull value=""NA"" ""data_last_time_seen (translated)"", data_last_lag_seen, data_max_lag_allowed, data_last_ingestion_lag_seen
+| fillnull value=0 isOutlier
+| eval system_behaviour_analytic_mode=`trackme_system_enable_behaviour_analytic_mode`
+| eval isOutlier=if(match(system_behaviour_analytic_mode, ""(?i)^(enabled|training)$""), isOutlier, 0)
+| fields - system_behaviour_analytic_mode
+| eval state = ""icon|"" + case(
+data_host_state==""green"", ""ico_good ico_small|icon-check|Good: data host status is green, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now), and monitoring conditions are met."",
+data_host_state==""red"" AND isnull(object_group_name) AND isOutlier=0 AND ( (data_host_alerting_policy=""global_policy"" AND default_data_host_alerting_policy=""track_per_sourcetype"") OR (data_host_alerting_policy=""track_per_sourcetype"") ) AND match(data_host_st_summary, ""state=red""), ""ico_error ico_small|icon-close|Alert: data host status is red, monitoring conditions are not met due to lagging or interruption in the data flow for at least one monitored sourcetype for this host, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now) and ingestion latency is approximately "" . data_last_ingestion_lag_seen . "" seconds, max lag configured is "" . data_max_lag_allowed . "" seconds."",
+data_host_state==""red"" AND isnull(object_group_name) AND isOutlier=0, ""ico_error ico_small|icon-close|Alert: data host status is red, monitoring conditions are not met due to lagging or interruption in the data flow, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now) and ingestion latency is approximately "" . data_last_ingestion_lag_seen . "" seconds, max lag configured is "" . data_max_lag_allowed . "" seconds."",
+data_host_state==""red"" AND isnull(object_group_name) AND isOutlier=1, ""ico_error ico_small|icon-close|Alert: data host status is red, monitoring conditions are not met due to outlier detection in the event count activity, review the Outlier detection window to investigate. For this source, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now) and ingestion latency is approximately "" . data_last_ingestion_lag_seen . "" seconds, max lag configured is "" . data_max_lag_allowed . "" seconds."",
+data_host_state==""orange"" AND isnull(object_group_name) AND isOutlier=1, ""ico_warn ico_small|icon-close|Warn: data host status is orange, monitoring conditions are not met due to outlier detection in the event count activity, review the Outlier detection window to investigate. For this source, latest data available is "" . 'data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now) and ingestion latency is approximately "" . data_last_ingestion_lag_seen . "" seconds, max lag configured is "" . data_max_lag_allowed . "" seconds."",
+data_host_state==""red"" AND isnotnull(object_group_name), ""ico_error ico_small|icon-close|Alert: data host does not honour lagging or week days monitoring conditions, in addition it is a member of a logical group named: "" . object_group_name . "" which is not honouring monitoring rules , the group green status percentage is "" . object_group_green_percent . "" % which does not comply with a minimal "" . object_group_min_green_percent . "" % green members configured for that group."" . ""(members: "" . 	object_group_members_count . ""/ red status members count: "" . 	object_group_members_red . "", latest data available for the group: "" . object_group_last_lag_seen . "" seconds from now)"",
+data_host_state==""orange"" AND isnull(object_group_name) AND data_last_lag_seen>=`trackme_future_indexing_tolerance`, ""ico_warn ico_small|icon-close|Warn: data host status is orange, lagging conditions are met, latest data available is "" . '	data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now), max lag configured in seconds is "" . data_max_lag_allowed . "" however week days rules conditions are not met."",
+data_host_state==""blue"" AND isnotnull(object_group_name) AND data_last_lag_seen>=`trackme_future_indexing_tolerance`, ""ico_unknown ico_small|icon-close|Info: data host does not honour lagging or week days monitoring conditions however it is a member of a logical group named: "" . object_group_name . "" which is honouring monitoring rules , the group green status percentage is "" . object_group_green_percent . "" % which complies with a minimal "" . object_group_min_green_percent . "" % green members configured for that group."" . ""(members: "" . 	object_group_members_count . ""/ red status members count: "" . 	object_group_members_red . "", latest data available for the group: "" . object_group_last_lag_seen . "" seconds from now)"",
+data_host_state==""orange"" AND data_last_lag_seen<`trackme_future_indexing_tolerance`, ""ico_warn ico_small|icon-close|Warn: data source status is orange, detected data indexed in the future which is most likely due to timestamping misconfiguration, timezone or time synchronization issue, latest data available is "" . '	data_last_time_seen (translated)' . "" ("" . data_last_lag_seen . "" seconds from now), max lag configured in seconds is "" . data_max_lag_allowed . "".""),
+monitoring = ""icon|"" + if(data_monitored_state==""enabled"", ""ico_good ico_small|icon-check|Enabled: data host is being actively monitored"", ""ico_error ico_small|icon-close|Disabled: data host monitoring is disabled"")
+| rex field=state ""[^\|]*\|[^\|]*\|[^\|]*\|(?<status_message>.*)""",
+"trackme_eval_icons_metric_host",,trackme,"eval state = ""icon|"" + case(
+metric_host_state==""green"", ""ico_good ico_small|icon-check|Good: metric host status is green, latest data available is "" . 'last time' . "" ("" . metric_last_lag_seen . "" seconds from now)"",
+metric_host_state==""red"" AND isnull(object_group_name), ""ico_error ico_small|icon-close|Alert: metric host status is red, lagging monitoring conditions are not met, latest data available is "" . 'last time' . "" ("" . metric_last_lag_seen . "" seconds from now)"",
+metric_host_state==""red"" AND isnotnull(object_group_name), ""ico_error ico_small|icon-close|Alert: metric host does not honour lagging conditions, in addition it is a member of a logical group named: "" . object_group_name . "" which is not honouring monitoring rules , the group green status percentage is "" . object_group_green_percent . "" % which does not comply with a minimal "" . object_group_min_green_percent . "" % green members configured for that group."" . ""(members: "" . 	object_group_members_count . ""/ red status members count: "" . 	object_group_members_red . "", latest data available for the group: "" . object_group_last_lag_seen . "" seconds from now)"",
+metric_host_state==""blue"" AND isnotnull(object_group_name), ""ico_unknown ico_small|icon-close|Info: metric host does not honour lagging conditions however it is a member of a logical group named: "" . object_group_name . "" which is honouring monitoring rules , the group green status percentage is "" . object_group_green_percent . "" % which complies with a minimal "" . object_group_min_green_percent . "" % green members configured for that group."" . ""(members: "" . 	object_group_members_count . ""/ red status members count: "" . 	object_group_members_red . "", latest data available for the group: "" . object_group_last_lag_seen . "" seconds from now)""),
+monitoring = ""icon|"" + if(metric_monitored_state==""enabled"", ""ico_good ico_small|icon-check|Enabled: metric host is being actively monitored"", ""ico_error ico_small|icon-close|Disabled: metric host monitoring is disabled"")
+| rex field=state ""[^\|]*\|[^\|]*\|[^\|]*\|(?<status_message>.*)""",
+"trackme_eval_icons_metric_host_state_only",,trackme,"eval state = ""icon|"" + case(metric_host_state==""green"", ""ico_good ico_small|icon-check|Up: metric category is available and marked as green due to monitoring rules being met (metric last time seen: "" . 	metric_last_time . "", "" . metric_current_lag_sec . "" seconds from now, which complies with a lagging configured of "" . metric_max_lag_allowed . ""seconds.)"",
+metric_host_state==""red"", ""ico_error ico_small|icon-close|Down: metric category is not available and therefore marked as down due to rules monitoring (metric last time seen: "" . 	metric_last_time . "", "" . metric_current_lag_sec . "" seconds from now, which does not comply with a lagging configured of "" . metric_max_lag_allowed . "" seconds.)"")",
+"trackme_eval_metric_category_state",,trackme,"eval detail_metric_host_state=if(detail_metric_current_lag_sec>detail_metric_max_lag_allowed, ""red"", ""green"")",
+"trackme_eval_metric_host_state",,trackme,"eval metric_host_state=if(match(metric_details, ""metric_host_state=red""), ""red"", ""green"")",
+"trackme_eval_noicons_flip",,trackme,"eval object_previous_state = case(
+object_previous_state==""green"", ""Up: object is available and marked as green due to monitoring rules being met"",
+object_previous_state==""red"", ""Down: object is not available or marked as down due to rules monitoring"",
+object_previous_state==""orange"", ""Warn: object is not available but marked as warn due to monitoring rules"",
+object_previous_state==""blue"", ""Info: object is not available however it is a member of a logical group which monitoring rules are met"",
+object_previous_state==""discovered"", ""Info: object was discovered and added to the collections""),
+object_state = case(object_state==""green"", ""Up: object is available and marked as green due to monitoring rules being met"",
+object_state==""red"", ""Down: object is not available or marked as down due to rules monitoring"",
+object_state==""orange"", ""Warn: object is not available but marked as warn due to monitoring rules"",
+object_state==""blue"", ""Info: object is not available however it is a member of a logical group which monitoring rules are met"")",
+"trackme_eval_spl",,trackme,"eval spl=case(
+search_mode=""tstats"", ""| "" . search_mode . "" max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" where "" . search_constraint . "" | eval data_name=\"""" . data_name . ""\"", data_index=\"""" . elastic_data_index . ""\"", data_sourcetype=\"""" . elastic_data_sourcetype . ""\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen"",
+search_mode=""raw"", search_constraint . "" | stats max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" | eval data_name=\"""" . data_name . ""\"", data_index=\"""" . elastic_data_index . ""\"", data_sourcetype=\"""" . elastic_data_sourcetype . ""\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen"",
+search_mode=""from"" AND match(from_part1, ""(?i)datamodel\:""), ""| "" . search_mode . "" "" . from_part1 . "" | "" . from_part2 . "" | stats max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" | eval data_name=\"""" . data_name . ""\"", data_index=\"""" . elastic_data_index . ""\"", data_sourcetype=\"""" . elastic_data_sourcetype . ""\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen"",
+search_mode=""from"" AND match(from_part1, ""(?i)lookup\:""), ""| "" . search_mode . "" "" . from_part1 . "" | "" . from_part2 . "" | eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \""none\"", host) | stats max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" | eval data_name=\"""" . data_name . ""\"", data_index=\"""" . elastic_data_index . ""\"", data_sourcetype=\"""" . elastic_data_sourcetype . ""\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen"",
+search_mode=""mstats"", ""| "" . search_mode . "" latest(_value) as value"" . "" where "" . search_constraint . "" by host, metric_name span=1m | stats min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, dc(metric_name) as data_eventcount, dc(host) as dcount_host | eval data_name=\"""" . data_name . ""\"", data_index=\"""" . elastic_data_index . ""\"", data_sourcetype=\"""" . elastic_data_sourcetype . ""\"", data_last_ingest=data_last_time_seen, data_last_ingestion_lag_seen=now()-data_last_time_seen"",
+search_mode=""rest_tstats"", ""| rest "" . rest_target . "" /servicesNS/admin/search/search/jobs/export search=\"""" . ""| tstats"" . "" max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" where "" . rest_constrainst . "" | eval data_name=\\\"""" . data_name . ""\\\"", data_index=\\\"""" . elastic_data_index . ""\\\"", data_sourcetype=\\\"""" . elastic_data_sourcetype . ""\\\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen\"""",
+search_mode=""rest_raw"", ""| rest "" . rest_target . "" /servicesNS/admin/search/search/jobs/export search=\"""" . ""search "" . rest_constrainst . "" | stats max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" | eval data_name=\\\"""" . data_name . ""\\\"", data_index=\\\"""" . elastic_data_index . ""\\\"", data_sourcetype=\\\"""" . elastic_data_sourcetype . ""\\\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen\"""",
+search_mode=""rest_from"" AND match(rest_constrainst_part1, ""(?i)datamodel\:""), ""| rest "" . rest_target . "" /servicesNS/admin/search/search/jobs/export search=\"""" . ""| from "" . rest_constrainst_part1 . "" | "" . rest_constrainst_part2 . "" | stats max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" | eval data_name=\\\"""" . data_name . ""\\\"", data_index=\\\"""" . elastic_data_index . ""\\\"", data_sourcetype=\\\"""" . elastic_data_sourcetype . ""\\\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen\"""",
+search_mode=""rest_from"" AND match(rest_constrainst_part1, ""(?i)lookup\:""), ""| rest "" . rest_target . "" /servicesNS/admin/search/search/jobs/export search=\"""" . ""| from "" . rest_constrainst_part1 . "" | "" . rest_constrainst_part2 . "" | eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \\\""none\\\"", host) | stats max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount, dc(host) as dcount_host"" . "" | eval data_name=\\\"""" . data_name . ""\\\"", data_index=\\\"""" . elastic_data_index . ""\\\"", data_sourcetype=\\\"""" . elastic_data_sourcetype . ""\\\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen\"""",
+search_mode=""rest_mstats"", ""| rest "" . rest_target . "" /servicesNS/admin/search/search/jobs/export search=\"""" . ""| mstats"" . "" latest(_value) as value"" . "" where "" . rest_constrainst . "" by host, metric_name span=1m | stats min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, dc(metric_name) as data_eventcount, dc(host) as dcount_host | eval data_last_ingest=data_last_time_seen | eval data_name=\\\"""" . data_name . ""\\\"", data_index=\\\"""" . elastic_data_index . ""\\\"", data_sourcetype=\\\"""" . elastic_data_sourcetype . ""\\\"", data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen\""""
+)",
+"trackme_extended_date_format(1)","input_field",trackme,"eval ""$input_field$""=strftime($input_field$, ""%d/%m/%Y %H:%M:%S"")",
+"trackme_future_indexing_tolerance",,trackme,"-600",
+"trackme_get_data_host_tags",,trackme,"`trackme_tags_default_message`",
+"trackme_get_flip(4)","state, previous_state, key, collection",trackme,"eval hasFlipped=if($previous_state$!=$state$ AND isnull(simulation), 0, 1) | eval hasFlipped=if(isnum(hasFlipped), hasFlipped, 0)
+| eval latest_flip_time=if(hasFlipped=0, now(), latest_flip_time)
+| eval latest_flip_state=if(hasFlipped=0, $state$, latest_flip_state)
+| eval object_state=$state$, object_previous_state=$previous_state$
+| eval object=$key$, object_category=case(isnotnull(data_name), ""data_source"", isnotnull(data_host), ""data_host"", isnotnull(metric_host), ""metric_host"")
+| appendpipe [ | where hasFlipped==0 | eval time=now(), result = strftime(now(), ""%d/%m/%Y %H:%M:%S"") . "", object="" . $key$ . "" has flipped from previous_state="" . $previous_state$ . "" to state="" . $state$ | `trackme_sumarycollect(""flip_state_change_tracking"")` | eval rectype=""0""]
+| appendpipe [ | where hasFlipped==1 | eval time=now(), rectype=""1""]
+| where isnotnull(rectype) | fields - hasFlipped, rectype, time",
+"trackme_get_identity_card(1)",key,trackme,"lookup trackme_sources_knowledge object as $key$ OUTPUT doc_link, doc_note, object as doc_key_match
+| eval doc_link=if(isnull(doc_link), ""null"", doc_link), doc_note=if(isnull(doc_note), ""null"", doc_note)
+| eval doc_link_global=`trackme_identity_card_default_url`, doc_note_global=`trackme_identity_card_default_note`, doc_identity_card_is_global=if(doc_link_global!=""none"" AND doc_note_global!=""none"" AND (doc_link==""null"" OR doc_note==""null""), ""true"", ""false"")
+| eval doc_key_match=case(isnotnull(doc_key_match) AND match(doc_key_match, ""\*""), ""wildcard"", isnotnull(doc_key_match), ""strict"")
+| eval doc_link=if(doc_link_global!=""none"" AND doc_note_global!=""none"" AND doc_link==""null"", doc_link_global, doc_link), doc_note=if(doc_link_global!=""none"" AND doc_note_global!=""none"" AND doc_note==""null"", doc_note_global, doc_note) | fields - doc_link_global, doc_note_global",
+"trackme_get_idx_whitelist(2)","lookup, outname",trackme,"[ | inputlookup $lookup$
+| stats values($outname$) as index | append [ | makeresults | eval index=""*"" | fields - _time ] | head 1 | mvexpand index ]",
+"trackme_get_idx_whitelist_searchtime(2)","lookup, outname",trackme,"[ | inputlookup $lookup$
+| stats values($outname$) as index | append [ | makeresults | eval index=""*"" | fields - _time ] | head 1 | mvexpand index | rename index as $outname$ ]",
+"trackme_get_metric_host_tags",,trackme,"`trackme_tags_default_message`",
+"trackme_get_sla(2)","object, object_category",trackme,"`trackme_idx` source=""current_state_tracking:$object_category$"" object_category=""$object_category$"" object=""$object$""
+| fields _time object_category, object, current_state
+| stats first(current_state) as current_state by _time, object_category, object
+| streamstats last(_time) as ""prev_time"", last(current_state) as prev_state current=f by object_category, object
+| eval range_duration=_time-prev_time, green_time=case(current_state=""green"" OR current_state=""blue"", range_duration), not_green_time=case(current_state!=""green"" AND current_state!=""blue"", range_duration)
+| stats sum(range_duration) as range_duration, sum(green_time) as green_time, sum(not_green_time) as not_green_time by object_category, object
+| eval green_time=if(isnum(green_time), green_time, 0), not_green_time=if(isnum(not_green_time), not_green_time, 0), percent_sla=round(green_time/range_duration*100, 2)
+| lookup trackme_objects_summary object, object_category OUTPUT priority, monitored_state
+| fields object, object_category, priority, monitored_state, percent_sla",
+"trackme_get_sla(4)","object_category,object,object_freetext,priority",trackme,"`trackme_idx` source=""current_state_tracking:$object_category$"" object_category=""$object_category$"" object=""$object_freetext$"" object=""$object$""
+| fields _time object_category, object, current_state
+| stats first(current_state) as current_state by _time, object_category, object
+`comment(""#### Use a lookup call to pre-filter the amount of events to streamstats, another lookup call to the same lookup is done at the final which is the most performing scenario #####"")`
+| lookup trackme_objects_summary object, object_category OUTPUT isAllowed
+| where isAllowed=""true""
+| streamstats last(_time) as ""prev_time"", last(current_state) as prev_state current=f by object_category, object
+| eval range_duration=_time-prev_time, green_time=case(current_state=""green"" OR current_state=""blue"", range_duration), not_green_time=case(current_state!=""green"" AND current_state!=""blue"", range_duration)
+| stats sum(range_duration) as range_duration, sum(green_time) as green_time, sum(not_green_time) as not_green_time by object_category, object
+| eval green_time=if(isnum(green_time), green_time, 0), not_green_time=if(isnum(not_green_time), not_green_time, 0), percent_sla=round(green_time/range_duration*100, 2)
+| foreach range_duration green_time not_green_time [ eval <<FIELD>> = tostring('<<FIELD>>', ""duration"") ]
+| lookup trackme_objects_summary object, object_category OUTPUT priority, monitored_state
+| search priority=""$priority$"" AND monitored_state=""enabled""
+| fields object, object_category, priority, monitored_state, range_duration, green_time, not_green_time, percent_sla
+| rename range_duration as ""total duration ([D+]HH:MM:SS)"", green_time as ""duration spent in green state ([D+]HH:MM:SS)"", not_green_time as ""duration spent in non green state ([D+]HH:MM:SS)""",
+"trackme_get_sla_details(2)","object, object_category",trackme,"`trackme_idx` source=""current_state_tracking:$object_category$"" object_category=""$object_category$"" object=""$object$""
+| fields _time, object_category, object, current_state
+| stats first(current_state) as current_state by _time, object_category, object
+| streamstats last(_time) as ""prev_time"", last(current_state) as prev_state current=f by object_category, object
+| eval range_duration=_time-prev_time, green_time=case(((current_state == ""green"") OR (current_state == ""blue"")),range_duration), not_green_time=case(((current_state != ""green"") AND (current_state != ""blue"")),range_duration)
+| stats sum(range_duration) as range_duration, sum(green_time) as green_time, sum(not_green_time) as not_green_time by object_category, object
+| foreach range_duration green_time not_green_time [ eval <<FIELD>> = tostring('<<FIELD>>', ""duration"") ]",
+"trackme_get_sla_pct_per_entity(2)","object_category, object",trackme,"`trackme_idx` source=""current_state_tracking:$object_category$"" object_category=""$object_category$"" object=""$object$""
+| fields _time object_category, object, current_state
+| sort limit=0 _time
+| stats first(current_state) as current_state by _time, object_category, object
+| streamstats last(_time) as ""prev_time"", last(current_state) as prev_state current=f by object_category, object
+| eval range_duration=_time-prev_time, green_time=case(current_state=""green"" OR current_state=""blue"", range_duration), not_green_time=case(current_state!=""green"" AND current_state!=""blue"", range_duration)
+| stats sum(range_duration) as range_duration, sum(green_time) as green_time, sum(not_green_time) as not_green_time by object_category, object
+| eval percent_sla=round(green_time/range_duration*100, 2) | fields percent_sla",
+"trackme_get_tracker_data_source(3)","data_name, index, sourcetype",trackme,"rest splunk_server=local /servicesNS/-/trackme/saved/searches | search eai:acl.app=""trackme"" title=""TrackMe - *"" is_visible=1 | fields title | rename title as savedsearch_name
+| where match(savedsearch_name, ""elastic tracker"") AND match(savedsearch_name, ""$data_name$"")
+| eval savedsearch_name = ""\"""" . savedsearch_name . ""\""""
+
+`comment(""#### First search for Elastic dedicated trackers ####"")`
+
+`comment(""#### Then searches for Elastic shared trackers ####"")`
+
+| append [
+| inputlookup trackme_elastic_sources | eval keyid=_key
+| search data_name=$data_name$
+| head 1
+| streamstats count as elastic_shared_count
+| fields data_name, elastic_shared_count
+| eval savedsearch_name=if(elastic_shared_count=1, ""\""TrackMe - Elastic sources shared tracker\"""", savedsearch_name)
+| fields savedsearch_name
+]
+
+`comment(""#### Finally search for standard data sources ####"")`
+
+| append [
+| inputlookup trackme_data_source_monitoring
+| fields data_name
+| search data_name=""$data_name$""
+| head 1
+| streamstats count as standard_source_count
+| fields data_name, standard_source_count
+| eval savedsearch_name=if(standard_source_count=1, ""\""TrackMe - Data source entity refresh\"" index=\""$index$\"" sourcetype=\""$sourcetype$\"" data_name=\""$data_name$\"""", savedsearch_name)
+| fields savedsearch_name
+]
+
+`comment(""#### There must one result exactly ####"")`
+
+| head 1",
+"trackme_identity_card_default_note",,trackme,"""none""",
+"trackme_identity_card_default_url",,trackme,"""none""",
+"trackme_idx",,trackme,"index=""trackme_summary""",
+"trackme_idx_filter",,trackme,"host=idx*",
+"trackme_isOutlier_status",,trackme,"eval isOutlier=if('data_eventcount' < lowerBound OR 'data_eventcount' < OutlierMinEventCount, 1, 0)
+`comment(""#### Define status regarding upperBound ####"")`
+| eval isOutlier=if('data_eventcount' > upperBound AND match(OutlierAlertOnUpper, ""^true$""), 1, isOutlier)",
+"trackme_load_data_sources_for_sampling",,trackme,"inputlookup trackme_data_source_monitoring where data_monitored_state=""enabled""",
+"trackme_load_data_sources_for_sampling(1)",key,trackme,"inputlookup trackme_data_source_monitoring where _key=""$key$""",
+"trackme_lookup_data_sampling",,trackme,"lookup trackme_data_sampling _key as keyid OUTPUT data_sample_status_message, data_sample_status_colour, data_sample_anomaly_reason
+| fillnull value=""INFO: The data sampling and format detection did not inspect this data source yet, click on the Manage Data sampling for more details."" data_sample_status_message
+| fillnull value=""blue"" data_sample_status_colour",
+"trackme_lookup_elastic_sources",,trackme,"lookup trackme_elastic_sources data_name OUTPUTNEW search_constraint as elastic_source_search_constraint, search_mode as elastic_source_search_mode
+| lookup trackme_elastic_sources_dedicated data_name OUTPUTNEW search_constraint as elastic_source_search_constraint, search_mode as elastic_source_search_mode
+| rex field=elastic_source_search_constraint ""^\s{0,}(?<elastic_source_from_part1>[^\|]*)\|{0,1}\s{0,}(?<elastic_source_from_part2>.*)?""
+| eval elastic_source_from_part2=case(
+elastic_source_search_mode=""from"" AND match(elastic_source_from_part1, ""(?i)datamodel\:"") AND (isnull(elastic_source_from_part2) OR elastic_source_from_part2=""""), ""search *"",
+elastic_source_search_mode=""from"" AND match(elastic_source_from_part1, ""(?i)lookup\:"") AND (isnull(elastic_source_from_part2) OR elastic_source_from_part2=""""), ""eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \""none\"", host)"",
+elastic_source_search_mode=""from"" AND match(elastic_source_from_part1, ""(?i)lookup\:"") AND (isnotnull(elastic_source_from_part2) AND elastic_source_from_part2!=""""), elastic_source_from_part2 . ""eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \""none\"", host)"",
+elastic_source_search_mode=""rest_from"" AND match(elastic_source_from_part2, ""(?i)datamodel\:""), elastic_source_from_part2,
+elastic_source_search_mode=""rest_from"" AND match(elastic_source_from_part2, ""(?i)lookup\:""), elastic_source_from_part2 . "" | eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \""none\"", host)"",
+isnotnull(elastic_source_from_part2) AND elastic_source_from_part2!="""", elastic_source_from_part2
+)
+| rex field=elastic_source_search_constraint ""(?P<elastic_mstats_idx>index=[\w|\*]*)(?P<elastic_mstats_filters>.*)""
+| eval elastic_mstats_idx=if(elastic_source_search_mode=""mstats"" OR elastic_source_search_mode=""rest_mstats"", elastic_mstats_idx, """")
+| eval elastic_mstats_filters=if(elastic_source_search_mode=""mstats"" OR elastic_source_search_mode=""rest_mstats"", elastic_mstats_filters, """")",
+"trackme_lookup_elastic_sources_for_data_sampling",,trackme,"lookup trackme_elastic_sources data_name OUTPUTNEW search_constraint as elastic_source_search_constraint, search_mode as elastic_source_search_mode
+| lookup trackme_elastic_sources_dedicated data_name OUTPUTNEW search_constraint as elastic_source_search_constraint, search_mode as elastic_source_search_mode
+| rex field=elastic_source_search_constraint ""^\s{0,}(?<elastic_source_from_part1>[^\|]*)\|{0,1}\s{0,}(?<elastic_source_from_part2>.*)?""
+| where NOT match(elastic_source_search_mode, ""^rest_"")
+| eval elastic_source_from_part2=case(
+elastic_source_search_mode=""from"" AND match(elastic_source_from_part1, ""(?i)datamodel\:"") AND (isnull(elastic_source_from_part2) OR elastic_source_from_part2=""""), ""search *"",
+elastic_source_search_mode=""from"" AND match(elastic_source_from_part1, ""(?i)lookup\:"") AND (isnull(elastic_source_from_part2) OR elastic_source_from_part2=""""), ""eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \""none\"", host)"",
+elastic_source_search_mode=""from"" AND match(elastic_source_from_part1, ""(?i)lookup\:"") AND (isnotnull(elastic_source_from_part2) AND elastic_source_from_part2!=""""), elastic_source_from_part2 . ""eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \""none\"", host)"",
+elastic_source_search_mode=""rest_from"" AND match(elastic_source_from_part2, ""(?i)datamodel\:""), elastic_source_from_part2,
+elastic_source_search_mode=""rest_from"" AND match(elastic_source_from_part2, ""(?i)lookup\:""), elastic_source_from_part2 . "" | eventstats max(_time) as indextime | eval _indextime=if(isnum(_indextime), _indextime, indextime) | fields - indextime | eval host=if(isnull(host), \""none\"", host)"",
+isnotnull(elastic_source_from_part2) AND elastic_source_from_part2!="""", elastic_source_from_part2
+)
+| rex field=elastic_source_search_constraint ""(?P<elastic_mstats_idx>index=[\w|\*]*)(?P<elastic_mstats_filters>.*)""
+| eval elastic_mstats_idx=if(elastic_source_search_mode=""mstats"" OR elastic_source_search_mode=""rest_mstats"", elastic_mstats_idx, """")
+| eval elastic_mstats_filters=if(elastic_source_search_mode=""mstats"" OR elastic_source_search_mode=""rest_mstats"", elastic_mstats_filters, """")",
+"trackme_mcollect(4)","object, object_category, metrics, dimensions",trackme,"eval _time=now(), object=$object$, object_category=""$object_category$""
+| eval $metrics$
+| fields $dimensions$, metric_name:*
+| rename ""metric_name:*"" as ""*""
+| mcollect split=t `trackme_metrics_idx` $dimensions$",
+"trackme_metric_host_extract_mvstsummary",,trackme,"rex field=metric_details_human mode=sed ""s/metric_host_state=green/✔️/g""
+| rex field=metric_details_human mode=sed ""s/metric_host_state=red/⭕/g""",
+"trackme_metric_host_group_lookup",,trackme,"eval object_category=""metric_host"" | lookup trackme_logical_group object_group_members as metric_host OUTPUTNEW _key as object_group_key, object_group_name, object_group_min_green_percent
+| eventstats count as object_group_members_count, min(metric_last_lag_seen) as object_group_last_lag_seen, count(eval(metric_host_state=""red"")) as object_group_members_red by object_group_key, object_group_name
+| eval object_group_green_percent=100-(object_group_members_red/object_group_members_count*100)
+| eval metric_host_state=if(isnotnull(object_group_key) AND isnotnull(object_group_name) AND metric_host_state!=""green"" AND object_group_green_percent>=object_group_min_green_percent, ""blue"", metric_host_state)
+| eval object_group_state=if(isnotnull(object_group_key) AND isnotnull(object_group_name) AND object_group_green_percent>=object_group_min_green_percent, ""green"", ""red"")",
+"trackme_metrics_idx",,trackme,"index=""trackme_metrics""",
+"trackme_mstats_main_filter",,trackme,"metric_name=""*"" metric_name!=""trackme*""",
+"trackme_mstats_span",,trackme,"span=1m",
+"trackme_outlier_chart(4)","object_category, object, key, span",trackme,"mstats max(_value) as eventcount_4h_span where `trackme_metrics_idx` metric_name=trackme.eventcount_4h object_category=""$object_category$"" object=""$object$"" by object_category, object span=$span$
+
+`comment(""#### Positive numerical only ####"")`
+| where eventcount_4h_span>0
+
+`comment(""#### Lookup outliers ####"")`
+| lookup trackme_summary_investigator_volume_outliers object_category, object OUTPUTNEW lowerBound, upperBound
+
+`comment(""#### Finally, provides the results ####"")`
+| eval _split_by=""$key$""
+| table _time, ""eventcount_4h_span"", lowerBound, upperBound",
+"trackme_outlier_chart_simulate(7)","object_category, object, key, minmultiplier, uppermultiplier, mineventcount, span",trackme,"mstats max(_value) as eventcount_4h_span where `trackme_metrics_idx` metric_name=trackme.eventcount_4h object_category=""$object_category$"" object=""$object$"" by object_category, object span=$span$
+`comment(""#### Summary data is loaded ####"")`
+
+`comment(""#### Positive numerical only ####"")`
+| where eventcount_4h_span>0
+
+`comment(""#### Perform standard deviation calculation of event counts registered ####"")`
+| append [ | mstats stdev(trackme.eventcount_4h) as stdev, avg(trackme.eventcount_4h) as avg where `trackme_metrics_idx` object_category=""$object_category$"" object=""$object$"" by object_category, object ]
+| eventstats first(stdev) as stdev, first(avg) as avg by object_category, object
+| stats first(eventcount_4h_span) as eventcount_4h_span, first(stdev) as stdev, first(avg) as avg by _time
+
+`comment(""#### Define OutlierMinEventCount ####"")`
+| eval OutlierMinEventCount=if(isnum($mineventcount$), $mineventcount$, 0)
+
+`comment(""#### Lower bound and Upper bound calculation ####"")`
+| eval lowerBound=(avg-stdev*exact($minmultiplier$)), upperBound=(avg+stdev*exact($uppermultiplier$))
+
+`comment(""#### Lower bound cannot be negative ####"")`
+| eval lowerBound=if(lowerBound<0, 0, lowerBound)
+
+`comment(""#### if OutlierMinEventCount is used, then lowerbound becomes a static value ####"")`
+| eval lowerBound=if(OutlierMinEventCount>0, OutlierMinEventCount, lowerBound)
+
+`comment(""#### In the context of event count behaviour analytic, we care about outliers that are below the lower bound detection ####"")`
+| eval isOutlier=if('data_eventcount' < lowerBound, 1, 0)
+| eval isOutlier=if('data_eventcount' > upperBound, 1, isOutlier)
+
+`comment(""#### Finally, provides the results ####"")`
+| eval _split_by=""$key$""
+| table _time, ""eventcount_4h_span"", lowerBound, upperBound",
+"trackme_outlier_table(3)","collection, key, object",trackme,"inputlookup $collection$ where $key$=""$object$""
+| lookup trackme_summary_investigator_volume_outliers object_category, object as $key$, OutlierTimePeriod OUTPUTNEW lowerBound, upperBound, stdev, avg
+| fields enable_behaviour_analytic, OutlierTimePeriod, OutlierSpan, isOutlier, OutlierMinEventCount, OutlierLowerThresholdMultiplier, OutlierUpperThresholdMultiplier, OutlierAlertOnUpper, lowerBound, upperBound, stdev, avg
+| foreach lowerBound, upperBound, stdev avg [ eval <<FIELD>> = round('<<FIELD>>', 2) ]
+| rename enable_behaviour_analytic as ""enable outlier"", OutlierLowerThresholdMultiplier as ""lower multiplier"", OutlierUpperThresholdMultiplier as ""upper multiplier"", OutlierAlertOnUpper as ""alert on upper""
+| foreach lowerBound upperBound stdev avg [ eval <<FIELD>> = case(
+'<<FIELD>>' > 1000000, tostring(round(('<<FIELD>>'/1000000), 2), ""commas"") . ""M"",
+'<<FIELD>>' > 1000, tostring(round(('<<FIELD>>'/1000), 2), ""commas"") . ""K"",
+isnum('<<FIELD>>'), '<<FIELD>>',
+isnotnull('<<FIELD>>') OR '<<FIELD>>'="""", ""error"") ]",
+"trackme_outliers_gen_metrics(3)","object_category, object, TargetOutlierTimePeriod",trackme,"mstats max(trackme.eventcount_4h) as trackme.eventcount_4h where `trackme_metrics_idx` object_category=""$object_category$"" object=""$object$"" enable_behaviour_analytic=""true"" earliest=""-30d"" latest=""now"" by object_category, object, OutlierTimePeriod span=5m
+| eval enable_behaviour_analytic=""true"", OutlierTimePeriod=""$TargetOutlierTimePeriod$""
+| append [ | mstats max(trackme.eventcount_4h) as trackme.eventcount_4h where `trackme_metrics_idx` object_category=""$object_category$"" object=""$object$"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""$TargetOutlierTimePeriod$"" earliest=""-30d"" latest=""now"" by object_category, object, OutlierTimePeriod span=5m ]
+| sort limit=0 _time
+| eventstats count as dcount by _time, object_category, object
+| where dcount=1 | fields - dcount
+| mcollect split=t `trackme_metrics_idx` object_category, object, OutlierTimePeriod, enable_behaviour_analytic",
+"trackme_outputlookup(2)","collection, key",trackme,"outputlookup $collection$ append=t key_field=$key$",
+"trackme_parse_duration(2)","inputfield, maxsec",trackme,"eval $inputfield$=if($inputfield$>$maxsec$, tostring(round($inputfield$, 0), ""duration""), round($inputfield$, 1) . "" sec"")",
+"trackme_rex_dateparserverbose",,trackme,"rex ""Context:\ssource=(?<data_source>[^\|]*)\|host=(?<data_host>[^\|]*)\|(?<data_sourcetype>[^\|]*)""",
+"trackme_show_builtin_model_rules",,trackme,"rest /servicesNS/nobody/trackme/admin/macros/trackme_data_sampling_detect_event_format(1) count=0 splunk_server=local | rename eai:appName as app | where app=""trackme"" | table title definition | table definition
+| fields definition
+| rex field=definition mode=sed ""s/eval \$dest_field\$=case\(//g""
+| rex field=definition mode=sed ""s/\| eval \$dest_field\$_id=md5\(\$dest_field\$\)//g""
+| rex field=definition mode=sed ""s/\)$//g""
+| rex field=definition mode=sed ""s/\""\,\n/\"";\n/g""
+| makemv delim="";"" definition
+| mvexpand definition
+| rex field=definition mode=sed ""s/\n//g""
+| rex field=definition ""(?<model_regex>.*)\,\s\""(?<model_name>.*)\""""
+| eval model_id=md5(model_name)
+| streamstats count as model_order
+| fields model_order, model_id, model_name, model_regex",
+"trackme_show_custom_model_rules",,trackme,"inputlookup trackme_data_sampling_custom_models | eval keyid=_key | eval order_range=if(model_type=""exclusive"", 0, 1) | sort 0 order_range | eval select=keyid | rex field=model_regex mode=sed ""s/\""/\\\""/g"" | streamstats count as model_order | fields model_order, model_id, model_name, model_type, model_regex, select, sourcetype_scope",
+"trackme_smart_status_emoji",,trackme,"rex mode=sed ""s/([\s|\""])green([\s|\""])/\1🟢\2/g"" | rex mode=sed ""s/([\s|\""])red([\s|\""])/\1🔴\2/g"" | rex mode=sed ""s/([\s|\""])orange([\s|\""])/\1🟠\2/g"" | rex mode=sed ""s/([\s|\""])blue([\s|\""])/\1🔵\2/g""",
+"trackme_smart_status_summary_dh(1)","data_host",trackme,"`trackme_tstats` max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount where [ | inputlookup trackme_host_monitoring where data_host=""$data_host$"" | fields data_index | makemv delim="","" data_index | mvexpand data_index | rename data_index as index | table index ] `trackme_tstats_main_filter` `trackme_get_idx_whitelist(trackme_data_host_monitoring_whitelist_index, data_index)` `apply_data_host_blacklists_data_retrieve` host=""$data_host$"" by index, sourcetype, host
+| eval data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen
+| `trackme_data_host_tracker_abstract`
+| where data_host=""$data_host$""
+| fields data_host_st_summary
+| makemv delim="","" data_host_st_summary
+| mvexpand data_host_st_summary
+| rex field=""data_host_st_summary"" ""^idx=(?<summary_idx>[^\|]*)\|st=(?<summary_st>[^\|]*)\|max_allowed=(?<summary_max_allowed>[^\|]*)\|last_ingest=(?<summary_last_ingest>[^\|]*)\|first_time=(?<summary_first_time>[^\|]*)\|last_time=(?<summary_last_time>[^\|]*)\|last_ingest_lag=(?<summary_last_ingest_lag>[^\|]*)\|last_event_lag=(?<summary_last_event_lag>[^\|]*)\|time_measure=(?<time>[^\|]*)\|state=(?<summary_state>[^\|]*)""
+| where (summary_state!=""green"" AND summary_state!=""info"")
+| fields summary_idx summary_st summary_max_allowed summary_last_ingest_lag summary_last_ingest summary_last_time summary_last_event_lag summary_state
+| rename summary_* as ""*""
+| eval last_ingest=strftime(last_ingest, ""%c""), last_time=strftime(last_time, ""%c""), last_ingest_lag=if(last_ingest_lag>60, tostring(last_ingest_lag, ""duration""), last_ingest_lag), last_event_lag=if(last_event_lag>60, tostring(last_event_lag, ""duration""), last_event_lag)
+| eval summary = ""[ "" . ""idx="" . idx . "", st="" . st . "", max_allowed="" . max_allowed . "", last_ingest="" . last_ingest . "", last_ingest_lag="" . last_ingest_lag . "", last_event="" . last_time . "", last_event_lag="" . last_event_lag . "", state="" . state . "" ]""
+| fields summary
+| stats values(summary) as summary
+| eval summary = mvjoin(summary, "", "")",
+"trackme_smart_status_summary_future_dh(1)","data_host",trackme,"`trackme_tstats` max(_indextime) as data_last_ingest, min(_time) as data_first_time_seen, max(_time) as data_last_time_seen, count as data_eventcount where [ | inputlookup trackme_host_monitoring where data_host=""$data_host$"" | fields data_index | makemv delim="","" data_index | mvexpand data_index | rename data_index as index | table index ] `trackme_tstats_main_filter` `trackme_get_idx_whitelist(trackme_data_host_monitoring_whitelist_index, data_index)` `apply_data_host_blacklists_data_retrieve` host=""$data_host$"" by index, sourcetype, host
+| eval data_last_ingestion_lag_seen=data_last_ingest-data_last_time_seen
+| `trackme_data_host_tracker_abstract`
+| where data_host=""$data_host$""
+| fields data_host_st_summary
+| makemv delim="","" data_host_st_summary
+| mvexpand data_host_st_summary
+| rex field=""data_host_st_summary"" ""^idx=(?<summary_idx>[^\|]*)\|st=(?<summary_st>[^\|]*)\|max_allowed=(?<summary_max_allowed>[^\|]*)\|last_ingest=(?<summary_last_ingest>[^\|]*)\|first_time=(?<summary_first_time>[^\|]*)\|last_time=(?<summary_last_time>[^\|]*)\|last_ingest_lag=(?<summary_last_ingest_lag>[^\|]*)\|last_event_lag=(?<summary_last_event_lag>[^\|]*)\|time_measure=(?<time>[^\|]*)\|state=(?<summary_state>[^\|]*)""
+| eval summary_state=if(summary_last_event_lag<-600, ""orange"", summary_state)
+| where (summary_state!=""green"" AND summary_state!=""info"")
+| fields summary_idx summary_st summary_max_allowed summary_last_ingest_lag summary_last_ingest summary_last_time summary_last_event_lag summary_state
+| rename summary_* as ""*""
+| eval last_ingest=strftime(last_ingest, ""%c""), last_time=strftime(last_time, ""%c""), last_ingest_lag=if(last_ingest_lag>60, tostring(last_ingest_lag, ""duration""), last_ingest_lag), last_event_lag=if(last_event_lag>60, tostring(last_event_lag, ""duration""), last_event_lag)
+| eval summary = ""[ "" . ""idx="" . idx . "", st="" . st . "", max_allowed="" . max_allowed . "", last_ingest="" . last_ingest . "", last_ingest_lag="" . last_ingest_lag . "", last_event="" . last_time . "", last_event_lag="" . last_event_lag . "", state="" . state . "" ]""
+| fields summary
+| stats values(summary) as summary
+| eval summary = mvjoin(summary, "", "")",
+"trackme_smart_status_summary_mh(1)","metric_host",trackme,"savedsearch ""trackMe - metric per host table report"" host=""$metric_host$""
+| where metric_host_state!=""green""
+
+| append [ | mcatalog values(metric_name) as metric_name where index=* metric_name=* earliest=""-5m"" latest=""now""
+| mvexpand metric_name
+| rex field=metric_name ""(?<metric_category>[^\.]*)\.{0,1}""
+| stats dc(metric_name) as metrics by metric_category
+| eval isActive = ""true ("" + metrics + "" distinct metrics active for any hosts during the past 5 min - these metrics are active for other hosts - the issue is likely limited to this specific host"" ]
+| stats first(*) as ""*"" by metric_category
+| eval isActive = if(isnull(isActive), ""false (no active metric activity for any hosts during the past 5 min - these metrics are apparently inactive - the issue is likely to be concerning all hosts and not limited to this specific host)"", isActive)
+| eval summary=""metric_category="" . metric_category . "", max_lag_allowed="" . metric_max_lag_allowed . "", current_lag="" . metric_current_lag_sec . "", lag_duration="". duration . "", last_time="" . metric_last_time . "", state="" . metric_host_state . "", isActive="" . isActive
+
+| fields summary
+| stats values(summary) as summary
+| eval summary=mvjoin(summary, "", "")",
+"trackme_smart_status_weekdays_to_human",,trackme,"rex field=data_monitoring_wdays mode=sed ""s/0/Sunday/g""
+| rex field=data_monitoring_wdays mode=sed ""s/1/Mondayy/g""
+| rex field=data_monitoring_wdays mode=sed ""s/2/Tuesday/g""
+| rex field=data_monitoring_wdays mode=sed ""s/3/Wednesday/g""
+| rex field=data_monitoring_wdays mode=sed ""s/4/Thursday/g""
+| rex field=data_monitoring_wdays mode=sed ""s/5/Friday/g""
+| rex field=data_monitoring_wdays mode=sed ""s/6/Saturday/g""",
+"trackme_sumarycollect(1)",report,trackme,"eval _time=now() | collect `trackme_idx` source=$report$",
+"trackme_summary_investigator_abstract",,trackme,"`comment(""#### Lookup outlier configuration ####"")`
+| lookup trackme_data_source_monitoring data_name as object, object_category OUTPUTNEW OutlierTimePeriod, OutlierLowerThresholdMultiplier, OutlierUpperThresholdMultiplier, OutlierAlertOnUpper, OutlierMinEventCount, enable_behaviour_analytic
+| lookup trackme_host_monitoring data_host as object, object_category OUTPUTNEW OutlierTimePeriod, OutlierLowerThresholdMultiplier, OutlierUpperThresholdMultiplier, OutlierAlertOnUpper, OutlierMinEventCount, enable_behaviour_analytic
+
+`comment(""#### Restrict calculations to the OutlierTimePeriod ####"")`
+| eval data_eventcount=if(_time>=relative_time(now(), OutlierTimePeriod), data_eventcount, """")
+
+`comment(""#### Perform standard deviation calculation of event counts registered ####"")`
+| eventstats avg(""data_eventcount"") as avg stdev(""data_eventcount"") as stdev by object_category, object
+
+`comment(""#### Define the default outlier threshold multiplier ####"")`
+| eval OutlierLowerThresholdMultiplier=if(isnum(OutlierLowerThresholdMultiplier), OutlierLowerThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+| eval OutlierUpperThresholdMultiplier=if(isnum(OutlierUpperThresholdMultiplier), OutlierUpperThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+
+`comment(""#### Lower bound and Upper bound calculation ####"")`
+| eval lowerBound=(avg-stdev*exact(OutlierLowerThresholdMultiplier)), upperBound=(avg+stdev*exact(OutlierUpperThresholdMultiplier))
+
+`comment(""#### Lower bound cannot be negative ####"")`
+| eval lowerBound=if(lowerBound<0, 0, lowerBound)
+
+`comment(""#### if OutlierMinEventCount is used, then lowerbound becomes a static value ####"")`
+| eval lowerBound=if(isnum(OutlierMinEventCount) AND OutlierMinEventCount>0, OutlierMinEventCount, lowerBound)
+
+`comment(""#### In the context of event count behaviour analytic, we care about outliers that are below the lower bound detection ####"")`
+| eval OutlierMinEventCount=if(isnum(OutlierMinEventCount), OutlierMinEventCount, 0)
+| eval isOutlier=if('data_eventcount' < lowerBound OR 'data_eventcount' < OutlierMinEventCount, 1, 0)
+`comment(""#### Define status regarding upperBound ####"")`
+| eval isOutlier=if('data_eventcount' > upperBound AND match(OutlierAlertOnUpper, ""^true$""), 1, isOutlier)
+
+`comment(""#### Register the latest values ####"")`
+| stats max(data_tracker_runtime) as data_tracker_runtime, latest(isOutlier) as isOutlier,
+first(OutlierTimePeriod) as OutlierTimePeriod,
+first(OutlierMinEventCount) as OutlierMinEventCount,
+first(OutlierLowerThresholdMultiplier) as OutlierLowerThresholdMultiplier, first(OutlierUpperThresholdMultiplier) as OutlierUpperThresholdMultiplier,
+first(OutlierAlertOnUpper) as OutlierAlertOnUpper,
+first(enable_behaviour_analytic) as enable_behaviour_analytic
+latest(lowerBound) as lowerBound, latest(upperBound) as upperBound, latest(stdev) as stdev by object_category, object
+
+`comment(""#### Store current time ####"")`
+| eval update_time=now()",
+"trackme_summary_investigator_define_bound_abstract",,trackme,"`comment(""#### Define the default outlier threshold multiplier ####"")`
+| eval OutlierLowerThresholdMultiplier=if(isnum(OutlierLowerThresholdMultiplier), OutlierLowerThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+| eval OutlierUpperThresholdMultiplier=if(isnum(OutlierUpperThresholdMultiplier), OutlierUpperThresholdMultiplier, `trackme_default_outlier_threshold_multiplier`)
+
+`comment(""#### Lower bound and Upper bound calculation ####"")`
+| eval lowerBound=(avg-stdev*exact(OutlierLowerThresholdMultiplier)), upperBound=(avg+stdev*exact(OutlierUpperThresholdMultiplier))
+
+`comment(""#### Lower bound cannot be negative ####"")`
+| eval lowerBound=if(lowerBound<0, 0, lowerBound)
+
+`comment(""#### if OutlierMinEventCount is used, then lowerbound becomes a static value ####"")`
+| eval lowerBound=if(isnum(OutlierMinEventCount) AND OutlierMinEventCount>0, OutlierMinEventCount, lowerBound)
+
+`comment(""#### Manage OutlierMinEventCount ####"")`
+| eval OutlierMinEventCount=if(isnum(OutlierMinEventCount), OutlierMinEventCount, 0)
+
+`comment(""#### Store current time ####"")`
+| eval update_time=now()",
+"trackme_summary_investigator_mstats",,trackme,"mstats append=t prestats=t stdev(trackme.eventcount_4h), avg(trackme.eventcount_4h) where `trackme_metrics_idx` object_category=""*"" object=""*"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-7d"" earliest=""-7d"" latest=""now"" by object_category, object
+| stats stdev(trackme.eventcount_4h) as stdev_7d, avg(trackme.eventcount_4h) as avg_7d by object_category, object
+
+| mstats append=t prestats=t stdev(trackme.eventcount_4h), avg(trackme.eventcount_4h) where `trackme_metrics_idx` object_category=""*"" object=""*"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-30d"" earliest=""-30d"" latest=""now"" by object_category, object
+| stats first(stdev_7d) as stdev_7d, first(avg_7d) as avg_7d, stdev(trackme.eventcount_4h) as stdev_30d, avg(trackme.eventcount_4h) as avg_30d by object_category, object
+
+| mstats append=t prestats=t stdev(trackme.eventcount_4h), avg(trackme.eventcount_4h) where `trackme_metrics_idx` object_category=""*"" object=""*"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-48h"" earliest=""-48h"" latest=""now"" by object_category, object
+| stats first(stdev_7d) as stdev_7d, first(avg_7d) as avg_7d, first(stdev_30d) as stdev_30d, first(avg_30d) as avg_30d, stdev(trackme.eventcount_4h) as stdev_48h, avg(trackme.eventcount_4h) as avg_48h by object_category, object
+
+| mstats append=t prestats=t stdev(trackme.eventcount_4h), avg(trackme.eventcount_4h) where `trackme_metrics_idx` object_category=""*"" object=""*"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-24h"" earliest=""-24h"" latest=""now"" by object_category, object
+
+| stats first(stdev_7d) as stdev_7d, first(avg_7d) as avg_7d, first(stdev_30d) as stdev_30d, first(avg_30d) as avg_30d, first(stdev_48h) as stdev_48h, first(avg_48h) as avg_48h, stdev(trackme.eventcount_4h) as stdev_24h, avg(trackme.eventcount_4h) as avg_24h by object_category, object
+
+`comment(""#### Once all of our stats have been loaded in a very high performing fashion, retrieve the content of the collections high performing mode ####"")`
+| inputlookup append=t trackme_data_source_monitoring
+| inputlookup append=t trackme_host_monitoring
+
+`comment(""#### Merge them all ####"")`
+| fields object_category object stdev_7d avg_7d stdev_30d avg_30d stdev_48h avg_48h stdev_24h avg_24h OutlierTimePeriod OutlierMinEventCount OutlierLowerThresholdMultiplier OutlierUpperThresholdMultiplier data_name data_host
+| eval object=case(isnull(object) AND object_category=""data_source"", data_name, isnull(object) AND object_category=""data_host"", data_host, isnotnull(object), object)
+| stats first(stdev_7d) as stdev_7d, first(avg_7d) as avg_7d, first(stdev_30d) as stdev_30d, first(avg_30d) as avg_30d, first(stdev_48h) as stdev_48h, first(avg_48h) as avg_48h, first(stdev_24h) as stdev_24h, first(avg_24h) as avg_24h,
+first(OutlierTimePeriod) as OutlierTimePeriod, first(OutlierMinEventCount) as OutlierMinEventCount,
+first(OutlierLowerThresholdMultiplier) as OutlierLowerThresholdMultiplier, first(OutlierUpperThresholdMultiplier) as OutlierUpperThresholdMultiplier by object_category, object
+
+`comment(""#### Conditionally define the stdev and avg to be applied ####"")`
+| eval stdev=case(
+OutlierTimePeriod=""-24h"", stdev_24h,
+OutlierTimePeriod=""-48h"", stdev_48h,
+OutlierTimePeriod=""-7d"", stdev_7d,
+OutlierTimePeriod=""-30d"", stdev_30d)
+| eval avg=case(
+OutlierTimePeriod=""-24h"", avg_24h,
+OutlierTimePeriod=""-48h"", avg_48h,
+OutlierTimePeriod=""-7d"", avg_7d,
+OutlierTimePeriod=""-30d"", avg_30d)",
+"trackme_summary_investigator_mstats(1)",period,trackme,"mstats stdev(trackme.eventcount_4h) as stdev, avg(trackme.eventcount_4h) as avg where `trackme_metrics_idx` object_category=""*"" object=""*"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""$period$"" earliest=""$period$"" latest=""now"" by object_category, object
+
+| inputlookup append=t trackme_data_source_monitoring where OutlierTimePeriod=""$period$""
+| inputlookup append=t trackme_host_monitoring where OutlierTimePeriod=""$period$""
+
+| fields object_category object stdev avg OutlierTimePeriod OutlierMinEventCount OutlierLowerThresholdMultiplier OutlierUpperThresholdMultiplier data_name data_host
+
+| eval object=case(isnull(object) AND object_category=""data_source"", data_name, isnull(object) AND object_category=""data_host"", data_host, isnotnull(object), object)
+
+| stats first(stdev) as stdev, first(avg) as avg, first(OutlierTimePeriod) as OutlierTimePeriod, first(OutlierMinEventCount) as OutlierMinEventCount,
+first(OutlierLowerThresholdMultiplier) as OutlierLowerThresholdMultiplier, first(OutlierUpperThresholdMultiplier) as OutlierUpperThresholdMultiplier by object_category, object
+
+| where isnotnull(OutlierTimePeriod)",
+"trackme_summary_investigator_mstats(2)","object_category, object",trackme,"mstats stdev(trackme.eventcount_4h) as stdev_7d, avg(trackme.eventcount_4h) as avg_7d where `trackme_metrics_idx` object_category=""$object_category$"" object=""$object$"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-7d"" earliest=""-7d"" latest=""now"" by object_category, object
+
+| append [
+| mstats stdev(trackme.eventcount_4h) as stdev_30d, avg(trackme.eventcount_4h) as avg_30d where `trackme_metrics_idx` object_category=""$object_category$"" object=""$object$"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-30d"" earliest=""-30d"" latest=""now"" by object_category, object
+]
+
+| append [
+| mstats stdev(trackme.eventcount_4h) as stdev_48h, avg(trackme.eventcount_4h) as avg_48h where `trackme_metrics_idx` object_category=""$object_category$"" object=""$object$"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-48h"" earliest=""-48h"" latest=""now"" by object_category, object
+]
+| append [
+| mstats stdev(trackme.eventcount_4h) as avg_48h, avg(trackme.eventcount_4h) as avg_24h where `trackme_metrics_idx` object_category=""$object_category$"" object=""$object$"" enable_behaviour_analytic=""true"" OutlierTimePeriod=""-24h"" earliest=""-24h"" latest=""now"" by object_category, object
+]
+
+`comment(""#### Once all of our stats have been loaded in a very high performing fashion, retrieve the content of the collections high performing mode ####"")`
+| inputlookup append=t trackme_data_source_monitoring
+| inputlookup append=t trackme_host_monitoring
+
+`comment(""#### Merge them all ####"")`
+| fields object_category object stdev_7d avg_7d stdev_30d avg_30d stdev_48h avg_48h stdev_24h avg_24h OutlierTimePeriod OutlierMinEventCount OutlierLowerThresholdMultiplier OutlierUpperThresholdMultiplier data_name data_host
+| eval object=case(isnull(object) AND object_category=""data_source"", data_name, isnull(object) AND object_category=""data_host"", data_host, isnotnull(object), object)
+| where object_category=""$object_category$"" AND object=""$object$""
+| stats first(stdev_7d) as stdev_7d, first(avg_7d) as avg_7d, first(stdev_30d) as stdev_30d, first(avg_30d) as avg_30d, first(stdev_48h) as stdev_48h, first(avg_48h) as avg_48h, first(stdev_24h) as stdev_24h, first(avg_24h) as avg_24h,
+first(OutlierTimePeriod) as OutlierTimePeriod, first(OutlierMinEventCount) as OutlierMinEventCount,
+first(OutlierLowerThresholdMultiplier) as OutlierLowerThresholdMultiplier, first(OutlierUpperThresholdMultiplier) as OutlierUpperThresholdMultiplier by object_category, object
+
+`comment(""#### Conditionally define the stdev and avg to be applied ####"")`
+| eval stdev=case(
+OutlierTimePeriod=""-24h"", stdev_24h,
+OutlierTimePeriod=""-48h"", stdev_48h,
+OutlierTimePeriod=""-7d"", stdev_7d,
+OutlierTimePeriod=""-30d"", stdev_30d)
+| eval avg=case(
+OutlierTimePeriod=""-24h"", avg_24h,
+OutlierTimePeriod=""-48h"", avg_48h,
+OutlierTimePeriod=""-7d"", avg_7d,
+OutlierTimePeriod=""-30d"", avg_30d)",
+"trackme_system_enable_behaviour_analytic_mode",,trackme,"""enabled""",
+"trackme_tags_default_message",,trackme,"eval tags =  ""Tags enrichment is not configured yet, consult the configuration UI TrackMe manage and configure.""",
+"trackme_tags_policies_apply(1)","target_field",trackme,"eval tags_auto = [ | `trackme_tags_policies_genspl($target_field$)`  | return $spl ]
+| eval tags_merged = case(
+isnotnull(tags) AND isnotnull(tags_auto), tags . "","" . tags_auto,
+isnotnull(tags), tags,
+isnotnull(tags_auto), tags_auto
+)
+| makemv delim="","" tags_merged
+| fields - tags, tags_auto
+| eval tags_merged=mvdedup(tags_merged), tags_merged=mvsort(tags_merged)
+| eval tags_merged=mvjoin(tags_merged, "","")
+| rename tags_merged as tags",
+"trackme_tags_policies_genspl(1)","target_field",trackme,"makeresults | eval spl = ""case("" | fields - _time
+| append [ | inputlookup trackme_tags_policies | rex field=tags_policy_regex mode=sed ""s/\""/\\\""/g""
+| eval spl = ""match($target_field$, \"""" . tags_policy_regex . ""\""), \"""" . tags_policy_value . ""\""""
+| streamstats count as record_id
+| eventstats max(record_id) as total_records
+| eval spl = if(record_id!=total_records, spl . "","", spl) ]
+| append [ | makeresults | eval spl = "")"" | fields - _time ]
+| stats list(spl) as spl | nomv spl | eval spl=if(spl == ""case( )"", ""noop"", spl)",
+"trackme_tags_policies_run_simulation(3)","tags_id, tags_list, tags_regex",trackme,"inputlookup trackme_data_source_monitoring | eval keyid=_key
+| fields data_name, tags
+| eval new_tags=case(match(data_name, ""$tags_regex$""), ""$tags_list$"")
+| eval simulation_tags = if(isnotnull(tags), tags . "","" . new_tags, new_tags)
+| makemv delim="","" simulation_tags
+| eval simulation_tags=mvsort(mvdedup(simulation_tags))
+| eval simulation_tags=mvjoin(simulation_tags, "","")
+| makemv delim="","" new_tags | fillnull value=""null"" new_tags
+| mvexpand new_tags | where new_tags!=""null""
+| stats values(data_name) as data_name, dc(data_name) as dcount by new_tags | sort - new_tags
+| eventstats sum(dcount) as total_matched
+| eval state=""success""
+| fields state, new_tags, dcount
+| stats first(state) as state, values(new_tags) as new_tags, first(dcount) as dcount
+| append [ | makeresults | eval state=""warning"", new_tags=""sensitive"", dcount=0 | fields - _time ] | head 1
+| eval status = case(
+state==""success"", ""One or more data sources could be matched with this policy"",
+state==""warning"", ""This policy would currently not match any data source""
+)
+| eval state = ""icon|"" + case(
+state==""success"", ""ico_good ico_small|icon-check|"" . status,
+state==""warning"", ""ico_warn ico_small|icon-close|"" . status
+)
+| eval tags_policy_id=""$tags_id$""
+| fields state, status, tags_policy_id, new_tags, dcount | rename dcount as ""Number of data sources matched""
+| lookup trackme_tags_policies tags_policy_id as tags_policy_id OUTPUT tags_policy_id as matched_tags_policy_id
+| eval status=if(isnotnull(matched_tags_policy_id), ""A policy with the same id already exists in the collection"", status)
+| eval state=if(isnotnull(matched_tags_policy_id), ""icon|ico_warn ico_small|icon-close|"" . status, state) | fields - matched_tags_policy_id",
+"trackme_tstats",,trackme,tstats,
+"trackme_tstats_main_filter",,trackme,"sourcetype!=""stash"" sourcetype!=""*too_small"" sourcetype!=""modular_alerts:trackme_*""",
+"trackme_tstats_main_filter_for_host",,trackme,"`trackme_tstats_root_include_splunkd`",
+"trackme_tstats_root_exclude_splunkd",,trackme,"(index=*)",
+"trackme_tstats_root_include_splunkd",,trackme,"(index=_internal sourcetype=splunkd)",

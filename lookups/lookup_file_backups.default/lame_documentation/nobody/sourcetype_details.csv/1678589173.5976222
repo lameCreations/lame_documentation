@@ -1,0 +1,109 @@
+sourcetype,description,usegroup
+corelight_conn,TCP/UDP/ICMP connections and flows,network
+corelight_red,Customer Generated Log,reduced
+corelight_corelight_audit_log,"audit records for any system activity, access, software and configuration
+changes on the sensor.",metrics
+corelight_corelight_metrics_bro,Provides metrics about the Corelight Sensor's Bro analysis. The fieldscorrespond to the bro.* metrics listed in Performance Metrics.,metrics
+corelight_corelight_metrics_cpu,Provides metrics about the Corelight Sensor's CPU usage. The fieldscorrespond to the cpu.* metrics listed in Performance Metrics.,metrics
+corelight_corelight_metrics_disk,Provides metrics about the Corelight Sensor's disk usage. The fieldscorrespond to the disk.* metrics listed in Performance Metrics.,metrics
+corelight_corelight_metrics_docker,Provides metrics about the Corelight Sensor's Docker usage. The fieldscorrespond to the docker.* metrics listed in Performance Metrics.,metrics
+corelight_corelight_metrics_iface,Provides metrics about the Corelight Sensor's network interfaces. Thefields correspond to the iface.* metrics listed in Performance Metrics.,metrics
+corelight_corelight_metrics_memory,Provides metrics about the Corelight Sensor's memory usage. Thefields correspond to the memory.* metrics listed in Performance Metrics.,metrics
+corelight_metrics_s3,Provides metrics about the Corelight Sensor's sftp logs. The fields correspondto the sftp.* metrics listed in Performance Metrics.,metrics
+corelight_metrics_smartpcap,"Provides metrics about Zeek SmartPCAP performance. The fields correspond
+to the smartpcap.monitor.* metrics listed in Performance
+Metrics.",metrics
+corelight_metrics_system,Provides metrics about the Corelight Sensor's system performance.The fields correspond to the system.* metrics listed in PerformanceMetrics.,metrics
+corelight_metrics_utilization,Provides metrics about the Corelight Sensor's utilization. The fieldscorrespond to the utilization.* metrics listed in PerformanceMetrics.,metrics
+corelight_overall_capture_loss,Provides aggregated capture loss info. Performance Metrics,metrics
+corelight_vpn,VPN Activity,network
+corelight_profiling,ZEEK stack traces,metrics
+corelight_service_status,Provides updates about the Corelight Sensor's service status. The fields are described in corelight_service_status.,metrics
+datared,Customer-generated log,reduced
+corelight_dce_rpc,DCE/RPC activity,network
+corelight_dhcp,DHCP Leases,network
+corelight_dnp3,DNP3 activity,network
+corelight_dns,DNS activity,network
+corelight_dns_red,reduced DNS logs,network
+corelight_dpd,Protocol detection results,network
+corelight_etc_viz,???,network
+corelight_files,File analysis results,network
+corelight_files_red,reduced files logs,network
+corelight_ftp,FTP activity,network
+corelight_http,HTTP activity,network
+corelight_http_red,reduced HTTP logs,network
+corelight_intel,Intelligence matches from the Corelight Intel Framework,network
+corelight_irc,IRC Activity,network
+corelight_kerberos,Kerberos Activity,network
+corelight_modbus,Modbus Activity,network
+corelight_mqtt_connect,MQTT Connections,OT
+corelight_mqtt_publish,MQTT Publish Events,OT
+corelight_mqtt_subscribe,MQTT Subscription Events,OT
+corelight_mysql,MySQL activity,network
+corelight_notice,Alerts raised by Corelight Custom Scripts,network
+corelight_ntlm,Authentication over NTLM. Typically from ntlm over SMB,network
+corelight_ntp,NTP Activity,network
+corelight_pe,Portable Executable analysis results,network
+corelight_radius,Radius Activity,network
+corelight_rdp,Remote Desktop Protocol activity,network
+corelight_reporter,Internal messages/warnings/errors logged by custom scripts.,network
+corelight_rfb,RFB (Remote FrameBuffer aka VNC) activity,network
+corelight_sip,SIP Activity,network
+corelight_smartpcap,smart pcap logs,network
+corelight_smartpcap-stats,smart pcap logs,network
+corelight_smb_files,Indications of files seen over SMB. Requires the SMB analyzer.,network
+corelight_smb_mapping,Drive shares being mapped over SMB.,network
+corelight_smtp,SMTP Activity,network
+corelight_snmp,SNMP Activity,network
+corelight_socks,SOCKS Activity,network
+corelight_software,Software per host,network
+corelight_ssh,SSH Activity,network
+corelight_ssl,SSL/TLS activity,network
+corelight_ssl_red,Reduced SSL logs,reduced
+corelight_stepping,customer generated logs ,metrics
+corelight_suricata_profiling,Suricata rule profiling,metrics
+corelight_syslog,Syslog Activity,network
+corelight_traceroute,Traceroute detection results,network
+corelight_tunnel,Tunneling protocol activity,network
+corelight_unknown_smartpcap,Customer-generated log,network
+corelight_weird,Unexpected network-level activity,network
+corelight_weird_red,Customer-generated log,reduced
+corelight_x509,X.509 certificate information,network
+corelight_x509_red,Customer-generated log,reduced
+corelight_bacnet,Bacnet activity,OT
+corelight_bacnet_discovery,Bacnet discovery activity,OT
+corelight_bacnet_property,Bacnet property activity,OT
+corelight_bsap_ip_header,BSAP activity,OT
+corelight_bsap_ip_rdb,BSAP activity,OT
+corelight_cip,CIP Activity,OT
+corelight_cip_identity,CIP Activity,OT
+corelight_cip_io,CIP Activity,OT
+corelight_conn_long,Long Network Connection Logs.  Long refers to the duration,network
+corelight_dnp3_control,DNP3 Activity,OT
+corelight_dnp3_objects,DNP3 Activity,OT
+corelight_encrypted_dns,Encrypted DNS Activity,network
+corelight_enip,ENIP Activity,OT
+corelight_generic_dns_tunnels,DNS Tunnel Activity,network
+corelight_generic_icmp_tunnels,ICMP Tunnel Activity,network
+corelight_http2,HTTP2 Activity,network
+corelight_modbus_detailed,Modbus Activity,OT
+corelight_modbus_read_write_multiple_registers	,Modbus Activity,OT
+corelight_profinet,Profinet Activity,OT
+corelight_profinet_dce_rpc,Profinet DCE RPC Activity,OT
+corelight_s7comm,S7Comm Activity,OT
+corelight_smtp_links,SMTP Links Activity,network
+corelight_specific_dns_tunnels,DNS Tunnel Activity,network
+corelight_suricata_corelight,Suricata IDS Alerts,network
+corelight_suricata_stats,Suricata Stats,metrics
+corelight_tds,Microsoft SQL Activity,network
+corelight_tds_rpc,Microsoft SQL RPC Activity,network
+corelight_tds_sql_batch,Microsoft SQL Batch Activity ,network
+corelight_corelight_burst,Corelight Sensor Burst Activity,metrics
+corelight_corelight_metrics_sftp,Corelight Sensor SFTP Activity,metrics
+corelight_corelight_metrics_suricata,Suricata Metrics Activity,metrics
+corelight_corelight_metrics_system,Corelight Sensor Metric System Activity,metrics
+corelight_corelight_metrics_utilization,Corelight Utilization Activity,metrics
+corelight_corelight_overall_capture_loss,Corelight Capture Loss Activity,metrics
+corelight_corelight_service_status,Corelight Service Status,metrics
+corelight_iso_cotp,Connection Oriented Transfer Protocol Activity,OT
+corelight_log4shell,log4shell activity,network

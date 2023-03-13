@@ -1,0 +1,58 @@
+<form version="1.1">
+  <label>Add Saved Search Details</label>
+  <description>add details to the saved searches lookup</description>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="text" token="title">
+      <label>Title</label>
+    </input>
+    <input type="text" token="details">
+      <label>Details</label>
+      <default>Change Me</default>
+      <initialValue>Change Me</initialValue>
+    </input>
+    <input type="text" token="mitre">
+      <label>Mitre Technique</label>
+    </input>
+    <input type="dropdown" token="usecase">
+      <label>Usecase</label>
+      <choice value="training">Training</choice>
+      <choice value="dataAdmin">Data Admin</choice>
+      <choice value="hunting">Hunting</choice>
+    </input>
+    <input type="dropdown" token="status">
+      <label>Status</label>
+      <choice value="production">Production</choice>
+      <choice value="development">Development</choice>
+      <choice value="delete">Delete</choice>
+      <default>production</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| makeresults
+| eval title = "$title$"
+| eval mitre = "$mitre$"
+| eval details = "$details$"
+| eval usecase = "$usecase$"
+| eval status = "$status$"
+| table title, mitre, details, usecase, status
+| where details != "Change Me" 
+
+| append [ | inputlookup saved_search_details.csv ]
+| table title, mitre, details, usecase, status
+| dedup title
+| outputlookup saved_search_details.csv</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

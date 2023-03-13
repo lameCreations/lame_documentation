@@ -1,0 +1,52 @@
+source,description,usegroup
+Indicator - *,ITSI alerts,Engineer
+/opt/mlshare/logs/IOC/IOC_Diff*,Intel framework TSV,Hunting
+/data/moloch/logs/capture.log,Arkime capture logs,Engineer
+/opt/mlshare/logs/kerberos/*,Machine Learning Kerberos Logs,Machine Learning
+/opt/mlshare/logs/ot/*,Machine Learning OT Logs,Machine Learning
+/opt/splunk/var/spool/splunk/*,Summary Indexes,Engineer
+/var/log/*,Host OS Logs,System Admin
+summary_*,Summary Indexes for Hunting,Summary Data
+*CORL*,Corelight Logs,Hunting
+CH_*,Central Health Summary Logs,Summary Data
+IDS_Corelight_Notic*,SOAR Automation Logs,SOAR
+asset_summary_src_ip,Summary Indexes summarizing conn logs by src_ips,Summary Data
+Asset_Summary_OT,Summary Indexes of OT traffic from conn logs,Summary Data
+CS_Searches,Summary Indexes of searches by analysts,Engineer
+Central_Inventory,Summary Index that creates inventory at central site,Summary Data
+Baseline_Network_Connections,Summary index of all conn logs,Summary Data
+WinEventLog:*,Windows Event Logs,System Admin
+Unix:*,Unix Event Logs,System Admin
+TrackMe - *,TrackMe Logs - Tracks the sources coming in.,Engineer
+/opt/splunk/var/log/introspection/*,Splunk Internal Logs,System Admin
+/data/moloch/logs/viewer.log,Arkime Viewer Logs,System Admin
+ActiveDirectory,Active Directory Logs,System Admin
+C:\Program Files\SplunkUniversalForwarder\etc\apps\TA-cs_windows_monitor\bin\win_listening_ports.bat	,Windows Ports that are Listening,System Admin
+Corelight_Notice_Ready_For_Phantom,SOAR Automation Logs,SOAR
+PerfmonMk:System	,Windows Perfmon Logs,System Admin
+WinRegistry,Windows Registry Logs,System Admin
+arkime_interfaces,Interface Logs for Arkime,System Admin
+computer,OS Logs,System Admin
+current_state_tracking:data_host,TrackMe Logs - Tracks the sources coming in.,Engineer
+current_state_tracking:data_source,TrackMe Logs - Tracks the sources coming in.,Engineer
+current_state_tracking:metric_host,TrackMe Logs - Tracks the sources coming in.,Engineer
+df,Linux Disk Status Logs,System Admin
+disabled_kpis_healthscore_generator,ITSI alerts,Engineer
+encore,eStreamer FMC IDS Alerts,Hunting
+flip_state_change_tracking,TrackMe Logs - Tracks the sources coming in.,Engineer
+inbound,inbound traffic from host logs,System Admin
+interfaces,interface logs from host logs,System Admin
+lastlog,lastlog logs from host logs,System Admin
+netstat,netstat logs from host logs,System Admin
+openPorts,Open ports from the host logs,System Admin
+outbound,outbound traffic from host logs,System Admin
+package,package logs from host logs,System Admin
+phantomdb,Phantom Logs for Soar,SOAR
+process,process logs from host logs,System Admin
+service_health_monitor,service health logs from host logs,System Admin
+tcp:9997,Splunk logs arriving on Port 9997,System Admin
+time,time logs from host logs,System Admin
+udp:51401,Splunk logs arriving on Port 51401,System Admin
+usersWithLoginPrivs,Login Privileges from host logs,System Admin
+who,who logs from host logs,System Admin
+intel_indicator_hunt,Summary Index that tracks what indicators have been searched for in the past,Hunting

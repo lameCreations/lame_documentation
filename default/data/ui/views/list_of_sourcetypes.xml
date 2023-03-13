@@ -1,0 +1,54 @@
+<form version="1.1">
+  <label>List of Sourcetypes</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="dropdown" token="index">
+      <label>Index</label>
+      <choice value="*">*</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>index</fieldForLabel>
+      <fieldForValue>index</fieldForValue>
+      <search>
+        <query>| eventcount summarize=false index=*  | stats count by index  | sort index</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="mytype">
+      <label>Type</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>usegroup</fieldForLabel>
+      <fieldForValue>usegroup</fieldForValue>
+      <search>
+        <query>| inputlookup sourcetype_details.csv | stats count by usegroup
+| sort - usegroup
+| fields usegroup</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+ <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| metadata index=$index$ type=sourcetypes
+| table sourcetype, totalCount
+| lookup sourcetype_details.csv sourcetype as sourcetype Output description as desc usegroup as usegroup
+| fillnull value="N/A" usegroup
+| search usegroup = $mytype$
+| table sourcetype, totalCount, desc,  usegroup</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

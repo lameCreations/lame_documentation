@@ -1,0 +1,68 @@
+<form version="1.1">
+  <label>Add Dashboard Details</label>
+  <description>add the details about a dashboard</description>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="text" token="dURL">
+      <label>Dashboard URL</label>
+    </input>
+    <input type="text" token="details">
+      <label>Details</label>
+      <default>Change Me</default>
+      <initialValue>Change Me</initialValue>
+    </input>
+    <input type="text" token="mitre">
+      <label>Mitre</label>
+    </input>
+    <input type="text" token="urlField">
+      <label>URL Field</label>
+    </input>
+    <input type="text" token="app">
+      <label>App</label>
+    </input>
+    <input type="dropdown" token="usecase">
+      <label>Use Case</label>
+      <choice value="">Auditing</choice>
+      <choice value="dataAdmin">Data Admin</choice>
+      <choice value="hunting">Hunting</choice>
+      <choice value="training">Training</choice>
+    </input>
+    <input type="dropdown" token="status">
+      <label>Status</label>
+      <choice value="production">Production</choice>
+      <choice value="development">Development</choice>
+      <choice value="delete">Delete</choice>
+    </input>
+  </fieldset>
+  <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| makeresults
+| eval id = "$dURL$"
+| eval mitre = "$mitre$"
+| eval details = "$details$"
+| eval usecase = "$usecase$"
+| eval status = "$status$"
+| eval urlField = "$urlField$"
+| eval app = "$app$"
+| table id, mitre, details, usecase, status, urlField, app
+
+| where details != "Change Me" 
+
+| append [ | inputlookup dashboard_details.csv ]
+| table id, mitre, details, usecase, status, app, urlField
+
+| dedup id, app, urlField
+| outputlookup dashboard_details.csv append=true</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

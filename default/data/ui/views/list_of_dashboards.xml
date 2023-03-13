@@ -1,0 +1,75 @@
+<form version="1.1">
+  <label>List of Dashboards</label>
+  <description>Provide a list of dashboards </description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="app">
+      <label>App Context</label>
+      <choice value="*">*</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>eai:acl.app</fieldForLabel>
+      <fieldForValue>eai:acl.app</fieldForValue>
+      <search>
+        <query>| rest splunk_server=local /servicesNS/-/-/data/ui/views 
+| stats count by eai:acl.app
+   | fields eai:acl.app
+   | sort by eai:acl.app</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="dropdown" token="category">
+      <label>Category</label>
+      <choice value="*">*</choice>
+      <fieldForLabel>usecase</fieldForLabel>
+      <fieldForValue>usecase</fieldForValue>
+      <search>
+        <query>| inputlookup dashboard_details.csv | stats count by usecase 
+| fields usecase</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+    </input>
+    <input type="text" token="ttp">
+      <label>TTP - [Txxx]</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <prefix>*</prefix>
+      <suffix>*</suffix>
+    </input>
+  </fieldset>
+  <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>List of Dashboards</title>
+        <search>
+          <query>| rest splunk_server=local /servicesNS/-/-/data/ui/views
+| search eai:acl.app=$app$ AND author!="nobody"
+| lookup dashboard_details.csv id as id output details, mitre, usecase
+| fillnull value="TBD" usecase, mitre
+| search (usecase=$category$ OR usecase="TBD") AND mitre=$ttp$
+| rex field="id" "(?&lt;urlField&gt;[^\/]+)$"
+   | table  urlField eai:acl.app eai:acl.owner details, mitre, usecase
+   | rename eai:acl.app as app eai:acl.owner as owner</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <condition field="urlField">
+            <eval token="u">$row.urlField$</eval>
+            <eval token="w">$row.app$</eval>
+            <link target="_blank">
+              <![CDATA[/app/$w$/$u$]]>
+            </link>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

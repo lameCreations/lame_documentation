@@ -1,0 +1,20 @@
+<panel>
+  <html>
+    <table width="100%">
+      <row>
+        <td><img src="/static/app/lame_documentation/QuestionMark.png" width="25" height="25"></img>
+        <a href="/app/lame_training/about_this_dashboard?form.id=$env:page$" target="_blank">About this page </a>
+        </td>
+        <td>
+
+        </td>
+        <td>
+          <a href="/app/lame_documentation/visual_about_a_dashboard" target="_blank">Search for a Dashboard </a>
+          <img src="/static/app/log_analysis_made_easy/MagnifyingGlass.png" width="25" height="25"></img>
+        </td>
+     
+      </row>
+    </table>
+
+  </html>
+</panel>

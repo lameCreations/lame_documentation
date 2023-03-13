@@ -1,0 +1,39 @@
+<form version="1.1">
+  <label>List of Indexes</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="area">
+      <label>Area</label>
+      <fieldForLabel>area</fieldForLabel>
+      <fieldForValue>area</fieldForValue>
+      <search>
+        <query>| inputlookup index_details.csv | stats count by area | table area</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel ref="helpbanner" app="lame_documentation"></panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| eventcount summarize=false index=*  
+| lookup index_details.csv index as index output details, area
+| fillnull value="TBD" area
+| search area=TBD OR area=$area$
+| stats values(details) as details, values(area) as area sum(count) as LogCount by index  | sort - LogCount</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">50</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

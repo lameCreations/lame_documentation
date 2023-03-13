@@ -1,0 +1,38 @@
+index,details,area
+"ame_default",,
+"anomaly_detection","Was used in dev - delete","To Be Erased"
+bro,"The logs from the Corelight sensors are located in this index.  This will be the primary index analysts will be reviewing.",Analyst
+"bro_intel","Corelight Intel hits on the uploaded indicators - in their own index so that it is not directly available to partner site users.",Analyst
+"cim_modactions","Splunk default logs",Splunk
+"collect_index","A summary index used in development",Dev
+corelight,,
+"cs_sys_mon",,
+history,"Splunk default logs",Splunk
+inventory,"An inventory of each IP and its associated attributes.  This is a daily record of the IP inventory",Analyst
+"itsi_grouped_alerts","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_im_meta","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_im_metrics","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_import_objects","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_notable_archive","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_notable_audit","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_summary","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_summary_metrics","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"itsi_tracked_alerts","Logs for ITSI.  ITSI is a splunk health monitoring system.",SystemAdmin
+"lame_test",,
+"lame_training",,
+main,"Splunk default / main index",Splunk
+"ml_anomaly_detection","The anomalies that the Machine Learning Team discovers in their ML data models.",Analyst
+os,"Linux Operating System Logs for the System Administrators.  These are the Linux logs for the systems in the CS infrastructure",SystemAdmin
+pfsense,,
+pihole,,
+snmptrapd,"Was used in dev - delete","To Be Erased"
+summary,"The default index that Splunk provides to write summary data to.",Splunk
+suricata,,
+test,,
+threathunting,"An index that holds all of the Splunk and eStreamer Alerts with a risk score associated to the indicator.  Allows for risk based hunting based of assets or users.",Dev
+"trackme_metrics","TrackMe Software is used to monitor the health of the data feeds coming into Splunk",SystemAdmin
+"trackme_summary","TrackMe Software is used to monitor the health of the data feeds coming into Splunk",SystemAdmin
+wekan,,
+windows,,
+wineventlog,,
+zeek,,
